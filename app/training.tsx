@@ -34,6 +34,9 @@ type M2Item = {
 
 const STORAGE_KEY = "elvia:m2:progress";
 const LOGO = require("../assets/elvia-logo.png");
+const FLAG_US = require("../assets/flags/flag-us.png");
+const FLAG_CO = require("../assets/flags/flag-co.png");
+
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 export default function Training() {
@@ -582,13 +585,50 @@ function Btn({
   onPress: () => void;
   disabled?: boolean;
 }) {
+  // Detectar flags dentro del label (🇺🇸, 🇨🇴, 🇺🇸+🇨🇴)
+  let display = label;
+  let flag: "us" | "co" | "us+co" | undefined;
+
+  if (label.includes("🇺🇸+🇨🇴")) {
+    display = label.replace("🇺🇸+🇨🇴", "").trim();
+    flag = "us+co";
+  } else if (label.includes("🇺🇸")) {
+    display = label.replace("🇺🇸", "").trim();
+    flag = "us";
+  } else if (label.includes("🇨🇴")) {
+    display = label.replace("🇨🇴", "").trim();
+    flag = "co";
+  }
+
   return (
     <Pressable
       style={[S.btn, disabled && S.btnDisabled]}
       onPress={onPress}
       disabled={disabled}
     >
-      <Text style={S.btnText}>{label}</Text>
+      <View style={S.btnContent}>
+        {display.length > 0 && <Text style={S.btnText}>{display}</Text>}
+        {flag === "us" && (
+          <Image source={FLAG_US} style={S.flagIcon} resizeMode="contain" />
+        )}
+        {flag === "co" && (
+          <Image source={FLAG_CO} style={S.flagIcon} resizeMode="contain" />
+        )}
+        {flag === "us+co" && (
+          <View style={S.flagRow}>
+            <Image
+              source={FLAG_US}
+              style={S.flagIconSmall}
+              resizeMode="contain"
+            />
+            <Image
+              source={FLAG_CO}
+              style={S.flagIconSmall}
+              resizeMode="contain"
+            />
+          </View>
+        )}
+      </View>
     </Pressable>
   );
 }
@@ -721,7 +761,25 @@ const S = StyleSheet.create({
     marginTop: 6,
   },
   btnDisabled: { opacity: 0.45 },
+  btnContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
   btnText: { color: "#fff", fontWeight: "800" },
+  flagIcon: {
+    width: 18,
+    height: 18,
+  },
+  flagRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  flagIconSmall: {
+    width: 16,
+    height: 16,
+  },
 
   toggle: {
     borderRadius: 999,

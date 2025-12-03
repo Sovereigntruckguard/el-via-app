@@ -45,6 +45,8 @@ type PItem = {
 const PKEY = "elvia:pronunciation:progress";
 const PKEY_FEEDBACK = "elvia:pronunciation:feedback";
 const LOGO = require("../assets/elvia-logo.png");
+const FLAG_US = require("../assets/flags/flag-us.png");
+const FLAG_CO = require("../assets/flags/flag-co.png");
 
 export default function Pronunciation() {
   const router = useRouter();
@@ -403,7 +405,6 @@ export default function Pronunciation() {
     setStatusMsg(null);
     setIdx((i) => {
       if (list.length === 0) return 0;
-      // en la última frase nos quedamos en la última
       return Math.min(i + 1, list.length - 1);
     });
   };
@@ -415,7 +416,6 @@ export default function Pronunciation() {
     setStatusMsg(null);
     setIdx((i) => {
       if (list.length === 0) return 0;
-      // en la primera frase nos quedamos en la primera
       return Math.max(i - 1, 0);
     });
   };

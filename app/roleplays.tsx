@@ -40,6 +40,8 @@ type RP = { id: string; title: string; lang: "en" | "es"; steps: Step[] };
 
 const PKEY = "elvia:roleplays:progress";
 const LOGO = require("../assets/elvia-logo.png");
+const FLAG_US = require("../assets/flags/flag-us.png");
+const FLAG_CO = require("../assets/flags/flag-co.png");
 
 export default function Roleplays() {
   const router = useRouter();
@@ -533,7 +535,7 @@ export default function Roleplays() {
           {roles.map((r, i) => {
             const rpSteps = r.steps.length;
             const rpProg = progress[r.id] || 0;
-            const isCompleted = rpProg >= rpSteps; // COMPLETADO REAL
+            const isCompleted = rpProg >= rpSteps;
 
             return (
               <Pressable
@@ -596,9 +598,30 @@ function Btn({
   onPress: () => void;
   small?: boolean;
 }) {
+  // Para los toggles de idioma, si el label contiene 🇺🇸 o 🇨🇴, pintamos la bandera.
+  let display = label;
+  let flag: "us" | "co" | undefined;
+
+  if (label.includes("🇺🇸")) {
+    display = label.replace("🇺🇸", "").replace("✅", "").trim();
+    flag = "us";
+  } else if (label.includes("🇨🇴")) {
+    display = label.replace("🇨🇴", "").replace("✅", "").trim();
+    flag = "co";
+  }
+
   return (
     <Pressable style={[S.btn, small && S.btnSmall]} onPress={onPress}>
-      <Text style={S.btnText}>{label}</Text>
+      <View style={S.btnContent}>
+        {flag && (
+          <Image
+            source={flag === "us" ? FLAG_US : FLAG_CO}
+            style={S.flagIcon}
+            resizeMode="contain"
+          />
+        )}
+        {display.length > 0 && <Text style={S.btnText}>{display}</Text>}
+      </View>
     </Pressable>
   );
 }
@@ -671,7 +694,16 @@ const S = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.12)",
   },
   btnSmall: { paddingVertical: 6, paddingHorizontal: 10 },
+  btnContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
   btnText: { color: "#fff", fontWeight: "800" },
+  flagIcon: {
+    width: 18,
+    height: 18,
+  },
 
   rpBtn: {
     backgroundColor: "#1E1E1E",

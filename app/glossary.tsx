@@ -32,6 +32,8 @@ type Signal = {
 const KEY_M3_SEEN = "elvia:m3:seen"; // progreso: ids vistas
 const KEY_M3_FEEDBACK = "elvia:m3:feedback"; // cache de retroalimentación IA
 const LOGO = require("../assets/elvia-logo.png");
+const FLAG_US = require("../assets/flags/flag-us.png");
+const FLAG_CO = require("../assets/flags/flag-co.png");
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 export default function GlossarySignals() {
@@ -254,14 +256,14 @@ export default function GlossarySignals() {
                     {/* Audio nombre */}
                     <Text style={S.subCaption}>Nombre de la señal</Text>
                     <View style={S.rowBtns}>
-                      {/* Normal EN – más rápido */}
+                      {/* Normal EN */}
                       <Btn
                         label="🎧 🇺🇸"
                         onPress={() =>
                           speak(sg.name_en, { lang: "en", rate: 1.15 })
                         }
                       />
-                      {/* Lento EN – mucho más despacio */}
+                      {/* Lento EN */}
                       <Btn
                         label="🐢 🇺🇸"
                         onPress={() =>
@@ -413,9 +415,29 @@ export default function GlossarySignals() {
 }
 
 function Btn({ label, onPress }: { label: string; onPress: () => void }) {
+  // Analiza el label para sacar emoji y banderas
+  let display = label;
+  let flag: "us" | "co" | undefined;
+
+  if (label.includes("🇺🇸")) {
+    display = label.replace("🇺🇸", "").trim();
+    flag = "us";
+  } else if (label.includes("🇨🇴")) {
+    display = label.replace("🇨🇴", "").trim();
+    flag = "co";
+  }
+
   return (
     <Pressable style={S.btn} onPress={onPress}>
-      <Text style={S.btnTxt}>{label}</Text>
+      <View style={S.btnContent}>
+        {display.length > 0 && <Text style={S.btnTxt}>{display}</Text>}
+        {flag === "us" && (
+          <Image source={FLAG_US} style={S.flagIcon} resizeMode="contain" />
+        )}
+        {flag === "co" && (
+          <Image source={FLAG_CO} style={S.flagIcon} resizeMode="contain" />
+        )}
+      </View>
     </Pressable>
   );
 }
@@ -543,7 +565,16 @@ const S = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.12)",
   },
+  btnContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
   btnTxt: { color: "#fff", fontWeight: "800" },
+  flagIcon: {
+    width: 18,
+    height: 18,
+  },
 
   doneRow: {
     flexDirection: "row",
