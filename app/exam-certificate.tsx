@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import {
   Alert,
   ImageBackground,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -101,7 +102,15 @@ export default function ExamCertificateScreen() {
         certificateId: buildCertificateId(result),
       };
 
-      await openCertificateFlow(payload);
+      if (Platform.OS === "web") {
+        // En web usamos el cuadro de impresión para guardar como PDF
+        if (typeof window !== "undefined") {
+          (window as any).print();
+        }
+      } else {
+        // En móvil mantenemos el flujo existente (share / print nativo)
+        await openCertificateFlow(payload);
+      }
 
       // Guardamos el resultado con ese nombre (solo referencia)
       await AsyncStorage.setItem(
