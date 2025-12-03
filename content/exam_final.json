@@ -1,0 +1,146 @@
+[
+  {
+    "id": "q1",
+    "type": "translation_mc",
+    "question": "¿Cómo saludarías de forma correcta y profesional a un inspector que se acerca a tu camión en la mañana?",
+    "options": [
+      "Hey, what's up?",
+      "Good morning, sir.",
+      "You again?"
+    ],
+    "correctIndex": 1
+  },
+  {
+    "id": "q2",
+    "type": "translation_mc",
+    "question": "Traduce correctamente: \"Licencia y registro, por favor\".",
+    "options": [
+      "License and registration, please.",
+      "Show me your license plate, please.",
+      "Open the trailer, please."
+    ],
+    "correctIndex": 0
+  },
+  {
+    "id": "q3",
+    "type": "translation_mc",
+    "question": "Si no entiendes lo que el inspector dijo, ¿cuál es la mejor frase para pedir que repita?",
+    "options": [
+      "Say it again, faster.",
+      "What?",
+      "Could you repeat that, please?"
+    ],
+    "correctIndex": 2
+  },
+  {
+    "id": "q4",
+    "type": "audio_mc",
+    "prompt": "Escucha la frase y elige el significado correcto en español.",
+    "audioText": "I'm going to inspect your logs and paperwork.",
+    "options": [
+      "Voy a revisar tu carga únicamente.",
+      "Voy a inspeccionar tus registros y papeles.",
+      "Voy a revisar cuánto combustible tienes."
+    ],
+    "correctIndex": 1
+  },
+  {
+    "id": "q5",
+    "type": "audio_mc",
+    "prompt": "Escucha la indicación y selecciona la respuesta adecuada.",
+    "audioText": "Please pull forward and park over there.",
+    "options": [
+      "Por favor, retrocede y apaga el camión.",
+      "Por favor, sigue derecho y estaciónate allá.",
+      "Por favor, apaga todas las luces."
+    ],
+    "correctIndex": 1
+  },
+  {
+    "id": "q6",
+    "type": "translation_mc",
+    "question": "La señal \"ACCIDENT AHEAD\" significa:",
+    "options": [
+      "Curva peligrosa",
+      "Accidente adelante",
+      "Fin de la construcción"
+    ],
+    "correctIndex": 1
+  },
+  {
+    "id": "q7",
+    "type": "translation_mc",
+    "question": "La señal \"ANIMAL CROSSING\" indica que debes:",
+    "options": [
+      "Acelerar para salir rápido de la zona.",
+      "Reducir velocidad y estar atento a animales cruzando.",
+      "Detenerte por completo siempre."
+    ],
+    "correctIndex": 1
+  },
+  {
+    "id": "q8",
+    "type": "fill",
+    "question": "Completa en inglés: \"Reduce ______ if you see an accident ahead\".",
+    "answer": "speed"
+  },
+  {
+    "id": "q9",
+    "type": "fill",
+    "question": "Completa: \"Good ______, officer\" (saludo correcto en la mañana).",
+    "answer": "morning"
+  },
+  {
+    "id": "q10",
+    "type": "order",
+    "question": "Ordena las palabras para formar la frase correcta: \"Estoy listo para la inspección\" (en inglés).",
+    "chunks": ["for", "ready", "I'm", "inspection", "the"],
+    "answer": ["I'm", "ready", "for", "the", "inspection"]
+  },
+  {
+    "id": "q11",
+    "type": "order",
+    "question": "Ordena las palabras para decir: \"Aquí tiene mi licencia y registro\".",
+    "chunks": ["Here", "and", "is", "registration", "my", "license"],
+    "answer": ["Here", "is", "my", "license", "and", "registration"]
+  },
+  {
+    "id": "q12",
+    "type": "translation_mc",
+    "question": "En un roleplay, el inspector dice: \"Do you know why I stopped you?\". ¿Cuál es la mejor respuesta inicial?",
+    "options": [
+      "No, sir. Could you tell me?",
+      "Because you are bored?",
+      "I don't care."
+    ],
+    "correctIndex": 0
+  },
+  {
+    "id": "q13",
+    "type": "translation_mc",
+    "question": "Si necesitas unos segundos para buscar un documento, ¿qué frase es más profesional?",
+    "options": [
+      "Wait, I'm slow.",
+      "Give me a second, I'm looking for it.",
+      "You can search it yourself."
+    ],
+    "correctIndex": 1
+  },
+  {
+    "id": "q14",
+    "type": "fill",
+    "question": "Completa: \"I ______ my pre-trip inspection today\" (para decir que ya la realizaste).",
+    "answer": "did"
+  },
+  {
+    "id": "q15",
+    "type": "translation_mc",
+    "question": "Si una señal dice \"SPEED LIMIT 55\", ¿qué debes hacer para estar en cumplimiento?",
+    "options": [
+      "Mantenerte por debajo o igual a 55 mph, según las condiciones.",
+      "Ir siempre a 55 mph sin importar el clima.",
+      "Ignorarla si el tráfico va más rápido."
+    ],
+    "correctIndex": 0
+  }
+]

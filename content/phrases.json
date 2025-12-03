@@ -1,0 +1,34 @@
+[
+  {
+    "id": "p1",
+    "module": 2,
+    "inspector_en": "Good morning.",
+    "driver_es": "Buenos días, oficial.",
+    "audio_inspector": "",
+    "audio_driver": ""
+  },
+  {
+    "id": "p2",
+    "module": 2,
+    "inspector_en": "May I see your license and registration?",
+    "driver_es": "Aquí tiene, señor.",
+    "audio_inspector": "",
+    "audio_driver": ""
+  },
+  {
+    "id": "p3",
+    "module": 2,
+    "inspector_en": "Where are you headed today?",
+    "driver_es": "Voy hacia Dallas, Texas.",
+    "audio_inspector": "",
+    "audio_driver": ""
+  },
+  {
+    "id": "p4",
+    "module": 3,
+    "inspector_en": "Do you know the speed limit here?",
+    "driver_es": "Sí, 65 millas por hora.",
+    "audio_inspector": "",
+    "audio_driver": ""
+  }
+]

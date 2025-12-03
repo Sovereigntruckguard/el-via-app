@@ -1,0 +1,332 @@
+[
+  {
+    "id": "rp-001",
+    "title": "Documentos – saludo e inicio",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "Good morning. License and registration, please.", "es": "Buenos días. Licencia y registro, por favor." },
+      { "speaker": "driver", "expected_en": "Good morning, sir. Here you go.", "expected_es": "Buenos días, señor. Aquí tiene.", "phonetics_es": "gud mórnin se-nyór, a-kí tié-ne" },
+      { "speaker": "inspector", "en": "Do you have your proof of insurance?", "es": "¿Puedo ver su prueba de seguro?" },
+      { "speaker": "driver", "expected_en": "Yes, here it is.", "expected_es": "Sí, aquí está.", "phonetics_es": "sí, a-kí es-tá" }
+    ]
+  },
+  {
+    "id": "rp-002",
+    "title": "ELD / HOS – mostrar pantalla",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "Show me your ELD screen, please.", "es": "Muéstreme su pantalla del ELD, por favor." },
+      { "speaker": "driver", "expected_en": "Yes, sir. Here is my HOS screen.", "expected_es": "Sí, señor. Aquí está mi pantalla de horas de servicio.", "phonetics_es": "sí, se-nyór, a-kí es-tá mi pan-tá-ya de ó-ras de ser-bí-sio" },
+      { "speaker": "inspector", "en": "When was your last 30-minute break?", "es": "¿Cuándo fue su último descanso de 30 minutos?" },
+      { "speaker": "driver", "expected_en": "Two hours ago.", "expected_es": "Hace dos horas.", "phonetics_es": "á-se dós ó-ras" }
+    ]
+  },
+  {
+    "id": "rp-003",
+    "title": "Inspección física – tráiler",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "Please step out of the vehicle and open the trailer.", "es": "Por favor, salga del vehículo y abra el tráiler." },
+      { "speaker": "driver", "expected_en": "Yes, sir.", "expected_es": "Sí, señor.", "phonetics_es": "sí, se-nyór" },
+      { "speaker": "inspector", "en": "Is your cargo properly secured?", "es": "¿Su carga está bien asegurada?" },
+      { "speaker": "driver", "expected_en": "Yes, everything is secured.", "expected_es": "Sí, todo está asegurado.", "phonetics_es": "sí, tó-do es-tá a-se-gu-rá-do" }
+    ]
+  },
+  {
+    "id": "rp-004",
+    "title": "Seguridad pública – alcohol",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "Have you consumed alcohol today?", "es": "¿Ha consumido alcohol hoy?" },
+      { "speaker": "driver", "expected_en": "No, I haven't.", "expected_es": "No, no he consumido.", "phonetics_es": "no, no e con-su-mí-do" },
+      { "speaker": "inspector", "en": "Were you wearing your seatbelt?", "es": "¿Estaba usando el cinturón de seguridad?" },
+      { "speaker": "driver", "expected_en": "Yes, always.", "expected_es": "Sí, siempre.", "phonetics_es": "sí, siem-pre" }
+    ]
+  },
+  {
+    "id": "rp-005",
+    "title": "Motivo de la parada – explicación",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "Do you know why I pulled you over?", "es": "¿Sabe por qué lo detuve?" },
+      { "speaker": "driver", "expected_en": "No, sir. Could you please explain?", "expected_es": "No, señor. ¿Podría explicarme?", "phonetics_es": "no, se-nyór, po-drí-a eks-pli-kár-me" },
+      { "speaker": "inspector", "en": "You were speeding in a 65 mph zone.", "es": "Iba a exceso de velocidad en una zona de 65 millas por hora." },
+      { "speaker": "driver", "expected_en": "I understand. I will be more careful.", "expected_es": "Entiendo. Seré más cuidadoso.", "phonetics_es": "en-tién-do, se-ré más cui-da-dó-so" }
+    ]
+  },
+  {
+    "id": "rp-006",
+    "title": "Identidad – nombre y apellido",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "What is your name?", "es": "¿Cuál es su nombre?" },
+      { "speaker": "driver", "expected_en": "My name is John Perez.", "expected_es": "Mi nombre es John Pérez.", "phonetics_es": "mi nóm-bre es yón pé-res" },
+      { "speaker": "inspector", "en": "Can you spell your last name?", "es": "¿Puede deletrear su apellido?" },
+      { "speaker": "driver", "expected_en": "P-E-R-E-Z.", "expected_es": "P-E-R-E-Z.", "phonetics_es": "pi i ar i zed" }
+    ]
+  },
+  {
+    "id": "rp-007",
+    "title": "Datos – fecha de nacimiento",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "What is your date of birth?", "es": "¿Cuál es su fecha de nacimiento?" },
+      { "speaker": "driver", "expected_en": "January fifteenth, nineteen eighty-five.", "expected_es": "15 de enero de 1985.", "phonetics_es": "quin-ce de e-ne-ro de mil no-ven-ta y cin-co" },
+      { "speaker": "inspector", "en": "How old are you?", "es": "¿Cuántos años tiene?" },
+      { "speaker": "driver", "expected_en": "I am forty years old.", "expected_es": "Tengo 40 años.", "phonetics_es": "tén-go cua-ren-ta a-ños" }
+    ]
+  },
+  {
+    "id": "rp-008",
+    "title": "Residencia – dirección",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "Where do you live?", "es": "¿Dónde vive?" },
+      { "speaker": "driver", "expected_en": "I live in Dallas, Texas.", "expected_es": "Vivo en Dallas, Texas.", "phonetics_es": "ví-vo en dá-las té-xas" },
+      { "speaker": "inspector", "en": "What is your address?", "es": "¿Cuál es su dirección?" },
+      { "speaker": "driver", "expected_en": "123 Main Street, Dallas, Texas.", "expected_es": "123 Main Street, Dallas, Texas.", "phonetics_es": "uan-tu-trí me-in estrít, dá-las té-xas" }
+    ]
+  },
+  {
+    "id": "rp-009",
+    "title": "Nacionalidad / procedencia",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "Where are you from?", "es": "¿De dónde es usted?" },
+      { "speaker": "driver", "expected_en": "I'm from Mexico.", "expected_es": "Soy de México.", "phonetics_es": "soi de mé-xi-co" },
+      { "speaker": "inspector", "en": "How long have you lived in the U.S.?", "es": "¿Cuánto tiempo lleva en EE.UU.?" },
+      { "speaker": "driver", "expected_en": "I've been here for ten years.", "expected_es": "Llevo 10 años aquí.", "phonetics_es": "lle-vo diez a-ños a-kí" }
+    ]
+  },
+  {
+    "id": "rp-010",
+    "title": "Experiencia laboral – años y compañía",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "How long have you been a truck driver?", "es": "¿Cuánto tiempo ha sido camionero?" },
+      { "speaker": "driver", "expected_en": "I've been driving for eight years.", "expected_es": "He sido camionero por ocho años.", "phonetics_es": "e sí-do ca-mio-ne-ro por ó-cho a-ños" },
+      { "speaker": "inspector", "en": "Who do you work for?", "es": "¿Para qué compañía trabaja?" },
+      { "speaker": "driver", "expected_en": "I work for ABC Trucking.", "expected_es": "Trabajo para ABC Trucking.", "phonetics_es": "tra-bá-jo pa-ra eibi sí trok-kin" }
+    ]
+  },
+  {
+    "id": "rp-011",
+    "title": "Viaje actual – origen y destino",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "Where are you coming from today?", "es": "¿De dónde viene hoy?" },
+      { "speaker": "driver", "expected_en": "I'm coming from Houston.", "expected_es": "Vengo de Houston.", "phonetics_es": "vén-go de hius-ton" },
+      { "speaker": "inspector", "en": "Where are you going now?", "es": "¿Hacia dónde va ahora?" },
+      { "speaker": "driver", "expected_en": "I'm going to Chicago.", "expected_es": "Voy para Chicago.", "phonetics_es": "voi pa-ra chi-cá-go" }
+    ]
+  },
+  {
+    "id": "rp-012",
+    "title": "Documentos – méd card y BL",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "May I see your medical card?", "es": "¿Puedo ver su certificado médico?" },
+      { "speaker": "driver", "expected_en": "Yes, here it is.", "expected_es": "Sí, aquí está.", "phonetics_es": "sí, a-kí es-tá" },
+      { "speaker": "inspector", "en": "Do you have the bill of lading?", "es": "¿Tiene la guía de carga?" },
+      { "speaker": "driver", "expected_en": "Yes, here it is.", "expected_es": "Sí, aquí está.", "phonetics_es": "sí, a-kí es-tá" }
+    ]
+  },
+  {
+    "id": "rp-013",
+    "title": "Inspección – apagar motor / encender balizas",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "Please turn off the engine.", "es": "Por favor, apague el motor." },
+      { "speaker": "driver", "expected_en": "Yes, sir.", "expected_es": "Sí, señor.", "phonetics_es": "sí, se-nyór" },
+      { "speaker": "inspector", "en": "Turn on your hazard lights, please.", "es": "Encienda las luces intermitentes, por favor." },
+      { "speaker": "driver", "expected_en": "Yes, sir.", "expected_es": "Sí, señor.", "phonetics_es": "sí, se-nyór" }
+    ]
+  },
+  {
+    "id": "rp-014",
+    "title": "Inspección – abrir tráiler / carga asegurada",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "Open the trailer, please.", "es": "Abra el tráiler, por favor." },
+      { "speaker": "driver", "expected_en": "Yes, sir.", "expected_es": "Sí, señor.", "phonetics_es": "sí, se-nyór" },
+      { "speaker": "inspector", "en": "Is your cargo properly secured?", "es": "¿Su carga está bien asegurada?" },
+      { "speaker": "driver", "expected_en": "Yes, everything is secured.", "expected_es": "Sí, todo está asegurado.", "phonetics_es": "sí, tó-do es-tá a-se-gu-rá-do" }
+    ]
+  },
+  {
+    "id": "rp-015",
+    "title": "ELD / horas – pausa y jornada",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "How many hours have you been driving today?", "es": "¿Cuántas horas ha estado manejando hoy?" },
+      { "speaker": "driver", "expected_en": "I have been driving for four hours.", "expected_es": "Llevo manejando cuatro horas.", "phonetics_es": "lle-vo ma-ne-ján-do cuá-tro ó-ras" },
+      { "speaker": "inspector", "en": "When was your last 30-minute break?", "es": "¿Cuándo fue su último descanso de 30 minutos?" },
+      { "speaker": "driver", "expected_en": "Two hours ago.", "expected_es": "Hace dos horas.", "phonetics_es": "á-se dós ó-ras" }
+    ]
+  },
+  {
+    "id": "rp-016",
+    "title": "Seguridad vial – límite de velocidad",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "Do you know the speed limit here?", "es": "¿Sabe cuál es el límite de velocidad aquí?" },
+      { "speaker": "driver", "expected_en": "Yes, sir. 65 miles per hour.", "expected_es": "Sí, señor. 65 millas por hora.", "phonetics_es": "sí, se-nyór. sesen-ta y sín-co mi-yas por ó-ra" },
+      { "speaker": "inspector", "en": "Please drive safely.", "es": "Por favor, conduzca con cuidado." },
+      { "speaker": "driver", "expected_en": "I will. Thank you.", "expected_es": "Lo haré. Gracias.", "phonetics_es": "lo a-ré, grá-sias" }
+    ]
+  },
+  {
+    "id": "rp-017",
+    "title": "Seguridad pública – armas",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "Do you have any weapons in the vehicle?", "es": "¿Tiene armas en el vehículo?" },
+      { "speaker": "driver", "expected_en": "No, sir.", "expected_es": "No, señor.", "phonetics_es": "no, se-nyór" },
+      { "speaker": "inspector", "en": "Any alcohol or drugs?", "es": "¿Alcohol o drogas?" },
+      { "speaker": "driver", "expected_en": "No, sir.", "expected_es": "No, señor.", "phonetics_es": "no, se-nyór" }
+    ]
+  },
+  {
+    "id": "rp-018",
+    "title": "Parada – explicación y compromiso",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "You were speeding in a 65 mph zone.", "es": "Iba a exceso de velocidad en una zona de 65 mph." },
+      { "speaker": "driver", "expected_en": "I understand. It won't happen again.", "expected_es": "Entiendo. No volverá a ocurrir.", "phonetics_es": "en-tién-do, no vol-ve-rá a o-cu-rír" },
+      { "speaker": "inspector", "en": "Please be more careful.", "es": "Sea más cuidadoso, por favor." },
+      { "speaker": "driver", "expected_en": "Yes, sir. I will be more careful.", "expected_es": "Sí, señor. Seré más cuidadoso.", "phonetics_es": "sí, se-nyór, se-ré más cui-da-dó-so" }
+    ]
+  },
+  {
+    "id": "rp-019",
+    "title": "Carga – peso y distribución",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "What are you hauling today?", "es": "¿Qué transporta hoy?" },
+      { "speaker": "driver", "expected_en": "I'm hauling produce.", "expected_es": "Estoy transportando productos.", "phonetics_es": "es-toy trans-por-tán-do pro-dúk-tos" },
+      { "speaker": "inspector", "en": "Is the weight properly distributed?", "es": "¿El peso está correctamente distribuido?" },
+      { "speaker": "driver", "expected_en": "Yes, it's properly distributed.", "expected_es": "Sí, está correctamente distribuido.", "phonetics_es": "sí, es-tá cor-rec-ta-men-te dis-tri-buí-do" }
+    ]
+  },
+  {
+    "id": "rp-020",
+    "title": "Parada – cooperación y respeto",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "Please cooperate with the inspection.", "es": "Por favor, coopere con la inspección." },
+      { "speaker": "driver", "expected_en": "Of course, sir.", "expected_es": "Por supuesto, señor.", "phonetics_es": "por su-pués-to, se-nyór" },
+      { "speaker": "inspector", "en": "Thank you for your cooperation.", "es": "Gracias por su colaboración." },
+      { "speaker": "driver", "expected_en": "You're welcome, officer.", "expected_es": "Con gusto, oficial.", "phonetics_es": "con gús-to, o-fi-siál" }
+    ]
+  },
+  {
+    "id": "rp-021",
+    "title": "ELD – transferencia / día de trabajo",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "Can you transfer your ELD records?", "es": "¿Puede transferir sus registros del ELD?" },
+      { "speaker": "driver", "expected_en": "Yes, I can transfer them now.", "expected_es": "Sí, puedo transferirlos ahora.", "phonetics_es": "sí, pue-do trans-fe-rír-los a-ó-ra" },
+      { "speaker": "inspector", "en": "How many hours did you work yesterday?", "es": "¿Cuántas horas trabajó ayer?" },
+      { "speaker": "driver", "expected_en": "I worked eleven hours.", "expected_es": "Trabajé once horas.", "phonetics_es": "tra-ba-jé ón-se ó-ras" }
+    ]
+  },
+  {
+    "id": "rp-022",
+    "title": "Documentos – BL/recepción",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "Show me the bill of lading and receiver details.", "es": "Muéstreme la guía de carga y los datos del receptor." },
+      { "speaker": "driver", "expected_en": "Here they are.", "expected_es": "Aquí están.", "phonetics_es": "a-kí es-tán" },
+      { "speaker": "inspector", "en": "Who is the receiver?", "es": "¿Quién es el receptor?" },
+      { "speaker": "driver", "expected_en": "ABC Distribution in Dallas.", "expected_es": "ABC Distribution en Dallas.", "phonetics_es": "eibi sí dis-tribiú-shon en dá-las" }
+    ]
+  },
+  {
+    "id": "rp-023",
+    "title": "Inspección – neumáticos/luces",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "When did you last check your tires and lights?", "es": "¿Cuándo revisó por última vez sus llantas y luces?" },
+      { "speaker": "driver", "expected_en": "I checked them before this trip.", "expected_es": "Las revisé antes de este viaje.", "phonetics_es": "las re-vi-sé án-tes de es-te viá-je" },
+      { "speaker": "inspector", "en": "Are there any defects?", "es": "¿Hay algún defecto?" },
+      { "speaker": "driver", "expected_en": "No, everything looks good.", "expected_es": "No, todo se ve bien.", "phonetics_es": "no, tó-do se ve bién" }
+    ]
+  },
+  {
+    "id": "rp-024",
+    "title": "Seguridad – cinturón y teléfono",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "Were you wearing your seatbelt and not using your phone?", "es": "¿Llevaba el cinturón y no estaba usando el teléfono?" },
+      { "speaker": "driver", "expected_en": "Yes, I was wearing it and I wasn't using my phone.", "expected_es": "Sí, lo llevaba puesto y no usaba el teléfono.", "phonetics_es": "sí, lo lle-ba-ba pue-sto y no u-sá-ba el te-lé-fo-no" },
+      { "speaker": "inspector", "en": "Thank you for driving safely.", "es": "Gracias por conducir con seguridad." },
+      { "speaker": "driver", "expected_en": "Thank you.", "expected_es": "Gracias.", "phonetics_es": "grá-sias" }
+    ]
+  },
+  {
+    "id": "rp-025",
+    "title": "HAZMAT – confirmación",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "Are you carrying hazardous materials today?", "es": "¿Transporta materiales peligrosos hoy?" },
+      { "speaker": "driver", "expected_en": "No, I am not carrying hazmat.", "expected_es": "No, no transporto materiales peligrosos.", "phonetics_es": "no, no trans-por-to ma-te-riá-les pe-li-gró-sos" },
+      { "speaker": "inspector", "en": "Do you have placards if needed?", "es": "¿Tiene rótulos si fueran necesarios?" },
+      { "speaker": "driver", "expected_en": "Yes, I would place them if needed.", "expected_es": "Sí, los colocaría si fueran necesarios.", "phonetics_es": "sí, los co-lo-ca-rí-a si fué-ran ne-ce-sá-rios" }
+    ]
+  },
+  {
+    "id": "rp-026",
+    "title": "Cortés pero firme – no sé / explíqueme",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "Do you know why I stopped you?", "es": "¿Sabe por qué lo detuve?" },
+      { "speaker": "driver", "expected_en": "No, sir. Could you please tell me?", "expected_es": "No, señor. ¿Podría decirme?", "phonetics_es": "no, se-nyór, po-drí-a de-cír-me" },
+      { "speaker": "inspector", "en": "You missed a stop sign.", "es": "Se pasó una señal de pare." },
+      { "speaker": "driver", "expected_en": "I understand. I will be more careful.", "expected_es": "Entiendo. Seré más cuidadoso.", "phonetics_es": "en-tién-do, se-ré más cui-da-dó-so" }
+    ]
+  },
+  {
+    "id": "rp-027",
+    "title": "Cooperación – registro y BL",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "Hand me your registration and bill of lading.", "es": "Entrégueme su registro y la guía de carga." },
+      { "speaker": "driver", "expected_en": "Here you go, sir.", "expected_es": "Aquí tiene, señor.", "phonetics_es": "a-kí tié-ne se-nyór" },
+      { "speaker": "inspector", "en": "Thank you. Wait here, please.", "es": "Gracias. Espere aquí, por favor." },
+      { "speaker": "driver", "expected_en": "Sure, I will wait here.", "expected_es": "Claro, esperaré aquí.", "phonetics_es": "clá-ro, es-pe-ra-ré a-kí" }
+    ]
+  },
+  {
+    "id": "rp-028",
+    "title": "Pre-trip – ajuste de frenos/luces",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "Did you perform your pre-trip inspection today?", "es": "¿Realizó su inspección previa al viaje hoy?" },
+      { "speaker": "driver", "expected_en": "Yes, I did a full pre-trip.", "expected_es": "Sí, hice una inspección completa.", "phonetics_es": "sí, í-se u-na ins-pek-sión com-plé-ta" },
+      { "speaker": "inspector", "en": "Are the brakes and lights working?", "es": "¿Funcionan los frenos y las luces?" },
+      { "speaker": "driver", "expected_en": "Yes, everything is working.", "expected_es": "Sí, todo funciona.", "phonetics_es": "sí, tó-do fun-cio-na" }
+    ]
+  },
+  {
+    "id": "rp-029",
+    "title": "Cierre – sin preguntas",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "Do you have any questions for me?", "es": "¿Tiene alguna pregunta para mí?" },
+      { "speaker": "driver", "expected_en": "No, sir. Thank you.", "expected_es": "No, señor. Gracias.", "phonetics_es": "no, se-nyór, grá-sias" },
+      { "speaker": "inspector", "en": "Drive safely.", "es": "Conduzca con cuidado." },
+      { "speaker": "driver", "expected_en": "Thank you, officer.", "expected_es": "Gracias, oficial.", "phonetics_es": "grá-sias, o-fi-siál" }
+    ]
+  },
+  {
+    "id": "rp-030",
+    "title": "Cierre – liberación",
+    "lang": "en",
+    "steps": [
+      { "speaker": "inspector", "en": "Everything is fine. You may continue your trip.", "es": "Todo está bien. Puede continuar su viaje." },
+      { "speaker": "driver", "expected_en": "Thank you. Have a good day.", "expected_es": "Gracias. Que tenga buen día.", "phonetics_es": "grá-sias, ke tén-ga buén dí-a" },
+      { "speaker": "inspector", "en": "Goodbye.", "es": "Adiós." },
+      { "speaker": "driver", "expected_en": "Goodbye, sir.", "expected_es": "Adiós, señor.", "phonetics_es": "a-diós, se-nyór" }
+    ]
+  }
+]

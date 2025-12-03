@@ -1,0 +1,5 @@
+[
+  { "id": "stop", "en": "Stop", "es": "Pare" },
+  { "id": "yield", "en": "Yield", "es": "Ceda el paso" },
+  { "id": "speed_65", "en": "Speed Limit 65", "es": "Velocidad máxima 65" }
+]

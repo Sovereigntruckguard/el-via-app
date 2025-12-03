@@ -1,0 +1,20 @@
+[
+  {
+    "id": "q1",
+    "question_en": "What are you hauling today?",
+    "answers": [
+      { "text_en": "I'm hauling produce.", "correct": true },
+      { "text_en": "I'm fine, thanks.",    "correct": false }
+    ],
+    "explain_es": "Responde sobre la carga; no es cortesía."
+  },
+  {
+    "id": "q2",
+    "question_en": "What is the speed limit posted here?",
+    "answers": [
+      { "text_en": "65 miles per hour.", "correct": true },
+      { "text_en": "I don't know.",      "correct": false }
+    ],
+    "explain_es": "Debes reconocer la señal en carretera."
+  }
+]

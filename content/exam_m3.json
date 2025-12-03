@@ -1,0 +1,96 @@
+[
+  {
+    "id": "q1",
+    "type": "translation_mc",
+    "question": "¿Qué significa en español la señal \"ACCIDENT AHEAD\"?",
+    "options": [
+      "Curva peligrosa",
+      "Accidente adelante",
+      "Cierre total de la vía"
+    ],
+    "correctIndex": 1
+  },
+  {
+    "id": "q2",
+    "type": "translation_mc",
+    "question": "¿Qué significa en español la señal \"ANIMAL CROSSING\"?",
+    "options": [
+      "Cruce de animales",
+      "Paso peatonal",
+      "Cruce de bicicletas"
+    ],
+    "correctIndex": 0
+  },
+  {
+    "id": "q3",
+    "type": "translation_mc",
+    "question": "Si ves una señal que dice \"SPEED LIMIT 55\", ¿qué indica?",
+    "options": [
+      "Velocidad mínima 55 mph",
+      "Velocidad máxima permitida 55 mph",
+      "Recomendación de velocidad, no obligatoria"
+    ],
+    "correctIndex": 1
+  },
+  {
+    "id": "q4",
+    "type": "translation_mc",
+    "question": "La señal \"STOP\" significa:",
+    "options": [
+      "Reducir velocidad y seguir",
+      "Detenerse por completo y luego avanzar cuando sea seguro",
+      "Tocar la bocina y seguir"
+    ],
+    "correctIndex": 1
+  },
+  {
+    "id": "q5",
+    "type": "audio_mc",
+    "prompt": "Escucha el nombre de la señal y elige su significado en español.",
+    "audioText": "Accident ahead.",
+    "options": [
+      "Desvío a la derecha",
+      "Accidente adelante",
+      "Estrechez de calzada"
+    ],
+    "correctIndex": 1
+  },
+  {
+    "id": "q6",
+    "type": "audio_mc",
+    "prompt": "Escucha la indicación y selecciona lo que debes hacer.",
+    "audioText": "Slow down and be prepared to stop.",
+    "options": [
+      "Acelerar para salir rápido de la zona",
+      "Reducir la velocidad y estar listo para detenerte",
+      "Cambiar de carril inmediatamente"
+    ],
+    "correctIndex": 1
+  },
+  {
+    "id": "q7",
+    "type": "fill",
+    "question": "Completa: la señal \"ANIMAL ______\" indica animales cruzando la vía.",
+    "answer": "CROSSING"
+  },
+  {
+    "id": "q8",
+    "type": "fill",
+    "question": "Completa en inglés: \"Reduce ______ and turn on hazard lights if needed\".",
+    "answer": "speed"
+  },
+  {
+    "id": "q9",
+    "type": "order",
+    "question": "Ordena las palabras para formar una recomendación correcta ante una señal de accidente:",
+    "chunks": ["down", "slow", "lights", "turn", "hazard", "on"],
+    "answer": ["slow", "down", "turn", "on", "hazard", "lights"]
+  },
+  {
+    "id": "q10",
+    "type": "order",
+    "question": "Ordena las palabras para formar la frase: \"Mantente atento a los animales\" (en inglés).",
+    "chunks": ["for", "animals", "watch"],
+    "answer": ["watch", "for", "animals"]
+  }
+]

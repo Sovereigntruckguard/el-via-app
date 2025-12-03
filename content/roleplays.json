@@ -1,0 +1,23 @@
+[
+  {
+    "id": "r1",
+    "module": 4,
+    "inspector": "Good morning, sir. Where are you going?",
+    "driver_en": "To Dallas, Texas.",
+    "driver_es": "A Dallas, Texas."
+  },
+  {
+    "id": "r2",
+    "module": 4,
+    "inspector": "What are you hauling today?",
+    "driver_en": "I'm hauling produce.",
+    "driver_es": "Estoy transportando productos."
+  },
+  {
+    "id": "r3",
+    "module": 6,
+    "inspector": "Have you consumed alcohol in the last 24 hours?",
+    "driver_en": "No, I haven't.",
+    "driver_es": "No, no he consumido."
+  }
+]

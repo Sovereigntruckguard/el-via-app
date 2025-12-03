@@ -1,0 +1,92 @@
+[
+  {
+    "id": "q1",
+    "type": "translation_mc",
+    "question": "¿Cómo se dice en inglés: \"Buenos días\" al iniciar una inspección?",
+    "options": ["Good night", "Good morning", "Good afternoon"],
+    "correctIndex": 1
+  },
+  {
+    "id": "q2",
+    "type": "translation_mc",
+    "question": "¿Cómo respondes cortésmente a un inspector que te saluda?",
+    "options": [
+      "Good morning, sir.",
+      "What do you want?",
+      "Wait a minute."
+    ],
+    "correctIndex": 0
+  },
+  {
+    "id": "q3",
+    "type": "translation_mc",
+    "question": "Traduce: \"Licencia y registro, por favor\".",
+    "options": [
+      "License and registration, please.",
+      "Insurance card, please.",
+      "Open the trailer, please."
+    ],
+    "correctIndex": 0
+  },
+  {
+    "id": "q4",
+    "type": "translation_mc",
+    "question": "¿Qué frase usarías para decir: \"Estoy listo para la inspección\"?",
+    "options": [
+      "I'm ready for the inspection.",
+      "I'm going to the restroom.",
+      "I don't understand anything."
+    ],
+    "correctIndex": 0
+  },
+  {
+    "id": "q5",
+    "type": "audio_mc",
+    "prompt": "Escucha el audio y elige la opción correcta.",
+    "audioText": "Good morning, sir.",
+    "options": [
+      "Good morning, sir.",
+      "Good evening, officer.",
+      "Good morning, ma'am."
+    ],
+    "correctIndex": 0
+  },
+  {
+    "id": "q6",
+    "type": "audio_mc",
+    "prompt": "Escucha el audio y selecciona lo que significa.",
+    "audioText": "License and registration, please.",
+    "options": [
+      "Muéstrame tu seguro, por favor.",
+      "Licencia y registro, por favor.",
+      "Abre el motor, por favor."
+    ],
+    "correctIndex": 1
+  },
+  {
+    "id": "q7",
+    "type": "fill",
+    "question": "Completa la frase: \"Could you ______ that, please?\"",
+    "answer": "repeat"
+  },
+  {
+    "id": "q8",
+    "type": "fill",
+    "question": "Completa: \"Good ______, officer\" (saludo típico en la mañana).",
+    "answer": "morning"
+  },
+  {
+    "id": "q9",
+    "type": "order",
+    "question": "Ordena las palabras para formar la frase correcta:",
+    "chunks": ["inspection", "for", "ready", "I'm", "the"],
+    "answer": ["I'm", "ready", "for", "the", "inspection"]
+  },
+  {
+    "id": "q10",
+    "type": "order",
+    "question": "Ordena las palabras para decir \"Aquí tiene mi licencia\".",
+    "chunks": ["Here", "license", "my", "is"],
+    "answer": ["Here", "is", "my", "license"]
+  }
+]

@@ -1,0 +1,186 @@
+[
+  {
+    "id": "accident-ahead",
+    "image": "accident-ahead.png",
+    "name_en": "ACCIDENT AHEAD",
+    "name_es": "ACCIDENTE ADELANTE",
+    "action_en": "Reduce speed, turn on hazard lights if needed, and follow directions from officers or signs.",
+    "action_es": "Reduce velocidad, usa luces intermitentes si es necesario y sigue indicaciones de oficiales o señales."
+  },
+  {
+    "id": "animal-crossing",
+    "image": "animal-crossing.png",
+    "name_en": "ANIMAL CROSSING",
+    "name_es": "CRUCE DE ANIMALES",
+    "action_en": "Slow down and stay alert for animals crossing the roadway.",
+    "action_es": "Reduce velocidad y permanece atento a animales cruzando la vía."
+  },
+  {
+    "id": "lane-closed-ahead",
+    "image": "lane-closed-ahead.png",
+    "name_en": "LANE CLOSED AHEAD",
+    "name_es": "CARRIL CERRADO ADELANTE",
+    "action_en": "Prepare to merge safely into the open lane well in advance.",
+    "action_es": "Prepárate para incorporarte con anticipación al carril abierto de forma segura."
+  },
+  {
+    "id": "merge-right",
+    "image": "merge-right.png",
+    "name_en": "MERGE RIGHT",
+    "name_es": "INCORPÓRESE A LA DERECHA",
+    "action_en": "Traffic merges to the right. Adjust speed and merge when safe.",
+    "action_es": "El tráfico se incorpora a la derecha. Ajusta velocidad e intégrate cuando sea seguro."
+  },
+  {
+    "id": "merge-road",
+    "image": "merge-road.jpg",
+    "name_en": "MERGE",
+    "name_es": "INCORPORACIÓN",
+    "action_en": "Another lane joins. Check mirrors and blind spots, merge smoothly.",
+    "action_es": "Otro carril se une. Revisa espejos y puntos ciegos, incorpórate suavemente."
+  },
+  {
+    "id": "no-left-turn",
+    "image": "no-left-turn.png",
+    "name_en": "NO LEFT TURN",
+    "name_es": "PROHIBIDO GIRAR A LA IZQUIERDA",
+    "action_en": "Left turns are not permitted at this location.",
+    "action_es": "Los giros a la izquierda están prohibidos en este punto."
+  },
+  {
+    "id": "no-parking-zone",
+    "image": "no-parking-zone.png",
+    "name_en": "NO PARKING",
+    "name_es": "PROHIBIDO ESTACIONAR",
+    "action_en": "Do not park or stop in this area unless authorized.",
+    "action_es": "No estaciones ni te detengas en esta zona salvo autorización."
+  },
+  {
+    "id": "no-right-turn",
+    "image": "no-right-turn.png",
+    "name_en": "NO RIGHT TURN",
+    "name_es": "PROHIBIDO GIRAR A LA DERECHA",
+    "action_en": "Right turns are not allowed at this location.",
+    "action_es": "Los giros a la derecha no están permitidos en este punto."
+  },
+  {
+    "id": "no-u-turn",
+    "image": "no-u-turn.png",
+    "name_en": "NO U-TURN",
+    "name_es": "PROHIBIDO RETORNAR",
+    "action_en": "U-turns are prohibited. Continue to the next permitted location.",
+    "action_es": "Retornos prohibidos. Continúa hasta el siguiente punto permitido."
+  },
+  {
+    "id": "pedestrian-crossing",
+    "image": "pedestrian-crossing.png",
+    "name_en": "PEDESTRIAN CROSSING",
+    "name_es": "CRUCE PEATONAL",
+    "action_en": "Reduce speed and yield to pedestrians at crosswalks.",
+    "action_es": "Reduce velocidad y cede el paso a peatones en los cruces."
+  },
+  {
+    "id": "railroad-crossing",
+    "image": "railroad-crossing.png",
+    "name_en": "RAILROAD CROSSING",
+    "name_es": "CRUCE FERROVIARIO",
+    "action_en": "Look, listen, and stop if signals are active. Never stop on the tracks.",
+    "action_es": "Observa y escucha; detente si las señales están activas. Nunca te detengas sobre las vías."
+  },
+  {
+    "id": "road-work-ahead",
+    "image": "road-work-ahead.png",
+    "name_en": "ROAD WORK AHEAD",
+    "name_es": "OBRAS EN LA VÍA",
+    "action_en": "Slow down, follow temporary signs, and watch for workers and equipment.",
+    "action_es": "Reduce velocidad, sigue señalización temporal y atención a personal y maquinaria."
+  },
+  {
+    "id": "sharp-curve-right",
+    "image": "sharp-curve-right.png",
+    "name_en": "SHARP CURVE RIGHT",
+    "name_es": "CURVA PRONUNCIADA A LA DERECHA",
+    "action_en": "Reduce speed before the curve and keep right.",
+    "action_es": "Reduce velocidad antes de la curva y mantente a la derecha."
+  },
+  {
+    "id": "sharp-curve-left",
+    "image": "sharp-curve-left.png",
+    "name_en": "SHARP CURVE LEFT",
+    "name_es": "CURVA PRONUNCIADA A LA IZQUIERDA",
+    "action_en": "Reduce speed before the curve and keep in your lane.",
+    "action_es": "Reduce velocidad antes de la curva y permanece en tu carril."
+  },
+  {
+    "id": "slippery-when-wet",
+    "image": "slippery-when-wet.png",
+    "name_en": "SLIPPERY WHEN WET",
+    "name_es": "RESBALOSO CUANDO ESTÁ MOJADO",
+    "action_en": "Slow down, increase following distance, avoid harsh braking.",
+    "action_es": "Reduce velocidad, aumenta distancia de seguimiento y evita frenadas bruscas."
+  },
+  {
+    "id": "speed-limit-50",
+    "image": "speed-limit-50.png",
+    "name_en": "SPEED LIMIT 50",
+    "name_es": "LÍMITE DE VELOCIDAD 50",
+    "action_en": "Do not exceed 50 mph; adapt to road and weather conditions.",
+    "action_es": "No excedas 50 mph; adapta la velocidad a la vía y al clima."
+  },
+  {
+    "id": "stop",
+    "image": "stop.png",
+    "name_en": "STOP",
+    "name_es": "ALTO / PARE",
+    "action_en": "Make a full stop at the line or crosswalk. Proceed when safe.",
+    "action_es": "Detente por completo en la línea o paso peatonal. Avanza cuando sea seguro."
+  },
+  {
+    "id": "traffic-light-ahead",
+    "image": "traffic-light-ahead.png",
+    "name_en": "TRAFFIC LIGHT AHEAD",
+    "name_es": "SEMÁFORO ADELANTE",
+    "action_en": "Prepare to stop or proceed based on the signal; reduce speed.",
+    "action_es": "Prepárate para detenerte o avanzar según el semáforo; reduce velocidad."
+  },
+  {
+    "id": "truck-downhill",
+    "image": "truck-downhill.png",
+    "name_en": "STEEP HILL (TRUCK)",
+    "name_es": "PENDIENTE PRONUNCIADA (CAMIÓN)",
+    "action_en": "Select lower gear and control speed; use engine braking.",
+    "action_es": "Selecciona un cambio bajo y controla la velocidad; usa freno de motor."
+  },
+  {
+    "id": "weight-station",
+    "image": "weight-station.png",
+    "name_en": "WEIGH STATION",
+    "name_es": "BÁSCULA / PESAJE",
+    "action_en": "Follow weigh station signs. Stop for inspection when signaled.",
+    "action_es": "Sigue las señales de la báscula. Detente para inspección cuando te lo indiquen."
+  },
+  {
+    "id": "yield",
+    "image": "yield.png",
+    "name_en": "YIELD",
+    "name_es": "CEDA EL PASO",
+    "action_en": "Give right of way; enter only when there is a safe gap.",
+    "action_es": "Cede el paso; ingresa solo cuando haya espacio suficiente."
+  },
+  {
+    "id": "weight-limit-10-tons",
+    "image": "weight-limit-10-tons.png",
+    "name_en": "WEIGHT LIMIT 10 TONS",
+    "name_es": "LÍMITE DE PESO 10 TONELADAS",
+    "action_en": "Do not exceed posted weight limit. Use alternate route if necessary.",
+    "action_es": "No excedas el límite de peso. Usa ruta alterna si es necesario."
+  },
+  {
+    "id": "school-zone",
+    "image": "school-zone.png",
+    "name_en": "SCHOOL ZONE",
+    "name_es": "ZONA ESCOLAR",
+    "action_en": "Reduce speed; watch for children and crossing guards.",
+    "action_es": "Reduce velocidad; atención a niños y auxiliares de cruce."
+  }
+]
