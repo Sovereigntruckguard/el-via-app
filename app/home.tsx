@@ -127,6 +127,19 @@ export default function Home() {
           </Text>
         </View>
 
+        {/* Footer legal interno */}
+        <View style={S.legalRow}>
+          <Link href={"/privacy" as any}>
+            <Text style={S.legalLink}>Privacidad</Text>
+          </Link>
+          <Link href={"/terms" as any}>
+            <Text style={S.legalLink}>Términos</Text>
+          </Link>
+          <Link href={"/refunds" as any}>
+            <Text style={S.legalLink}>Reembolsos</Text>
+          </Link>
+        </View>
+
         {/* Sello al final del scroll */}
         <RoseEmbossedSeal />
       </ScrollView>
@@ -328,7 +341,7 @@ const S = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.08)",
-    marginBottom: 20,
+    marginBottom: 12,
     width: "92%",
   },
   goalTitle: {
@@ -339,4 +352,18 @@ const S = StyleSheet.create({
     textAlign: "center",
   },
   goalText: { color: "#9CA3AF", textAlign: "center", lineHeight: 20 },
+
+  // Footer legal interno
+  legalRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 16,
+    marginBottom: 20,
+    marginTop: 4,
+  },
+  legalLink: {
+    color: "#9CA3AF",
+    fontSize: 12,
+    textDecorationLine: "underline",
+  },
 });

@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import React from "react";
 import {
   Image,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -95,6 +96,19 @@ export default function Onboarding() {
         >
           <Text style={S.btnAccessText}>Ya tengo acceso</Text>
         </TouchableOpacity>
+
+        {/* Footer legal */}
+        <View style={S.legalRow}>
+          <Pressable onPress={() => router.push("/privacy" as never)}>
+            <Text style={S.legalLink}>Privacidad</Text>
+          </Pressable>
+          <Pressable onPress={() => router.push("/terms" as never)}>
+            <Text style={S.legalLink}>Términos</Text>
+          </Pressable>
+          <Pressable onPress={() => router.push("/refunds" as never)}>
+            <Text style={S.legalLink}>Reembolsos</Text>
+          </Pressable>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -190,5 +204,17 @@ const S = StyleSheet.create({
     color: ROSEN.colors.roseDeep,
     textAlign: "center",
     fontWeight: "800",
+  },
+  legalRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 16,
+    marginTop: 28,
+    marginBottom: 18,
+  },
+  legalLink: {
+    color: ROSEN.colors.mute,
+    fontSize: 12,
+    textDecorationLine: "underline",
   },
 });
