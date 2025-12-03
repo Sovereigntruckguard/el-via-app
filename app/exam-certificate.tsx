@@ -35,43 +35,6 @@ export default function ExamCertificateScreen() {
   const [result, setResult] = useState<ExamResult | null>(null);
   const [fullName, setFullName] = useState("");
 
-  // Inyectar CSS para imprimir solo el certificado en web
-  useEffect(() => {
-    if (Platform.OS === "web" && typeof document !== "undefined") {
-      const style = document.createElement("style");
-      style.id = "elvia-print-style";
-      style.innerHTML = `
-        @media print {
-          body * {
-            visibility: hidden !important;
-          }
-          #certificate-print-area, #certificate-print-area * {
-            visibility: visible !important;
-          }
-          #certificate-print-area {
-            position: fixed;
-            inset: 0;
-            margin: auto;
-            width: 100%;
-            height: auto;
-          }
-          body {
-            margin: 0;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-          }
-        }
-      `;
-      document.head.appendChild(style);
-      return () => {
-        const existing = document.getElementById("elvia-print-style");
-        if (existing && existing.parentNode) {
-          existing.parentNode.removeChild(existing);
-        }
-      };
-    }
-  }, []);
-
   useEffect(() => {
     (async () => {
       try {
@@ -129,6 +92,13 @@ export default function ExamCertificateScreen() {
       return;
     }
 
+    // ➜ En WEB, mandamos a la pantalla especial de impresión
+    if (Platform.OS === "web") {
+      router.push("/exam-certificate-print");
+      return;
+    }
+
+    // ➜ En móvil, mantenemos el flujo original
     try {
       const payload: CertificateData = {
         fullName: fullName.trim(),
@@ -139,16 +109,8 @@ export default function ExamCertificateScreen() {
         certificateId: buildCertificateId(result),
       };
 
-      if (Platform.OS === "web") {
-        if (typeof window !== "undefined") {
-          window.print(); // gracias al @media print solo se verá el certificado
-        }
-      } else {
-        // Flujo original en móvil
-        await openCertificateFlow(payload);
-      }
+      await openCertificateFlow(payload);
 
-      // Guardamos el resultado con ese nombre (referencia)
       await AsyncStorage.setItem(
         STORAGE_KEY,
         JSON.stringify({ ...result, fullName: fullName.trim() })
@@ -231,14 +193,10 @@ export default function ExamCertificateScreen() {
           </Text>
         </View>
 
-        {/* PREVIEW DEL CERTIFICADO */}
+        {/* PREVIEW DEL CERTIFICADO (igual que antes) */}
         <Text style={styles.sectionTitle}>Vista previa del certificado</Text>
 
-        {/* ESTA VISTA ES LA QUE SE IMPRIME EN WEB */}
-        <View
-          style={styles.previewWrapper}
-          nativeID="certificate-print-area"
-        >
+        <View style={styles.previewWrapper}>
           <ImageBackground
             source={require("../assets/certificates/elvia_certificate_base.png")}
             style={styles.previewImage}
