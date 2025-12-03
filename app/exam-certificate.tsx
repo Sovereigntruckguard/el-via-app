@@ -103,14 +103,31 @@ export default function ExamCertificateScreen() {
       };
 
       if (Platform.OS === "web") {
-        // En web usamos el cuadro de impresión para guardar como PDF
-        if (typeof window !== "undefined") {
-          (window as any).print();
+        // En web: imprimir SOLO el certificado
+        if (typeof document !== "undefined" && typeof window !== "undefined") {
+          const doc = document as any;
+          const certEl = doc.getElementById("certificate-print-area");
+          if (certEl) {
+            const original = doc.body.innerHTML;
+            doc.body.innerHTML = certEl.innerHTML;
+            (window as any).print();
+            doc.body.innerHTML = original;
+            window.location.reload();
+            // Guardamos referencia del nombre
+            await AsyncStorage.setItem(
+              STORAGE_KEY,
+              JSON.stringify({ ...result, fullName: fullName.trim() })
+            );
+            return;
+          }
         }
-      } else {
-        // En móvil mantenemos el flujo existente (share / print nativo)
-        await openCertificateFlow(payload);
+        // Fallback: si no encontramos el elemento, imprimimos todo
+        (window as any).print();
+        return;
       }
+
+      // En móvil mantenemos el flujo nativo
+      await openCertificateFlow(payload);
 
       // Guardamos el resultado con ese nombre (solo referencia)
       await AsyncStorage.setItem(
@@ -198,7 +215,8 @@ export default function ExamCertificateScreen() {
         {/* PREVIEW DEL CERTIFICADO */}
         <Text style={styles.sectionTitle}>Vista previa del certificado</Text>
 
-        <View style={styles.previewWrapper}>
+        {/* Esta vista es la que se imprimirá en web */}
+        <View style={styles.previewWrapper} nativeID="certificate-print-area">
           <ImageBackground
             source={require("../assets/certificates/elvia_certificate_base.png")}
             style={styles.previewImage}
