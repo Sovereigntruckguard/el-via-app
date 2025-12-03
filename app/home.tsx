@@ -90,6 +90,13 @@ export default function Home() {
           </Link>
         </View>
 
+        {/* Enlace al Manual de uso de la app */}
+        <View style={S.userManualRow}>
+          <Link href={"/manual-user" as any}>
+            <Text style={S.userManualLink}>Ver manual de uso de la app</Text>
+          </Link>
+        </View>
+
         {/* Progreso total */}
         <View style={S.progressBox}>
           <Text style={S.progressTitle}>Progreso total</Text>
@@ -274,6 +281,17 @@ const S = StyleSheet.create({
     textAlign: "center",
     textAlignVertical: "center",
     width: "100%",
+  },
+
+  // Link manual usuario
+  userManualRow: {
+    marginTop: 4,
+    marginBottom: 4,
+  },
+  userManualLink: {
+    color: "#E6B7C8",
+    fontSize: 13,
+    textDecorationLine: "underline",
   },
 
   // Progreso oro blanco
