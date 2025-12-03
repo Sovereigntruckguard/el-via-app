@@ -18,7 +18,7 @@ export default function ExamCertificatePrintScreen() {
   const { user } = useAuth();
   const [fullName, setFullName] = useState<string>("");
 
-  // Cargar nombre desde AsyncStorage + AuthContext
+  // 1. Cargamos el nombre desde Auth + AsyncStorage
   useEffect(() => {
     (async () => {
       try {
@@ -35,9 +35,37 @@ export default function ExamCertificatePrintScreen() {
     })();
   }, [user]);
 
-  // En web: abrir diálogo de impresión cuando todo esté listo
+  // 2. Inyectar un poco de CSS para asegurar que se impriman colores / imagen
   useEffect(() => {
-    if (Platform.OS === "web" && fullName && typeof window !== "undefined") {
+    if (Platform.OS === "web" && typeof document !== "undefined") {
+      const style = document.createElement("style");
+      style.id = "elvia-cert-print-style";
+      style.innerHTML = `
+        @media print {
+          body {
+            margin: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+      return () => {
+        const existing = document.getElementById("elvia-cert-print-style");
+        if (existing && existing.parentNode) {
+          existing.parentNode.removeChild(existing);
+        }
+      };
+    }
+  }, []);
+
+  // 3. Lanzar el diálogo de impresión cuando el nombre esté listo
+  useEffect(() => {
+    if (
+      Platform.OS === "web" &&
+      fullName &&
+      typeof window !== "undefined"
+    ) {
       const id = setTimeout(() => {
         window.print();
       }, 400);
@@ -45,15 +73,15 @@ export default function ExamCertificatePrintScreen() {
     }
   }, [fullName]);
 
-  // Solo nos interesa la vista WEB
+  // En mobile no usamos esta pantalla, solo en web
   if (Platform.OS !== "web") {
     return null;
   }
 
-  // Obtenemos la URL real del PNG para usarla en <img>
+  // 4. Obtener la URL real del PNG para usarla en <img>
   // @ts-ignore
-  const certImg = require("../assets/certificates/elvia_certificate_base.png") as any;
-  const src: string = certImg?.src ?? certImg;
+  const certAsset = require("../assets/certificates/elvia_certificate_base.png") as any;
+  const src: string = certAsset?.src ?? certAsset;
 
   return (
     <div
@@ -63,8 +91,8 @@ export default function ExamCertificatePrintScreen() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        padding: 0,
         margin: 0,
+        padding: 0,
       }}
     >
       <div
@@ -72,10 +100,10 @@ export default function ExamCertificatePrintScreen() {
           position: "relative",
           width: "90vw",
           maxWidth: "1200px",
-          aspectRatio: "1248 / 832",
+          aspectRatio: "1248 / 832", // proporción real del certificado
         }}
       >
-        {/* Imagen base del certificado */}
+        {/* Imagen completa del certificado */}
         <img
           src={src}
           alt="Certificado EL-VÍA"
@@ -86,22 +114,25 @@ export default function ExamCertificatePrintScreen() {
           }}
         />
 
-        {/* Nombre en el espacio del certificado */}
+        {/* Nombre colocado en el área que marcaste */}
         <div
           style={{
             position: "absolute",
             left: 0,
             right: 0,
-            // Ajusta este % para subir/bajar el nombre hasta que quede perfecto
-            top: "45%",
+            // 🔥 Aquí ajustamos verticalmente el nombre:
+            //  - Para subirlo: baja este valor (p.e. 52%)
+            //  - Para bajarlo: súbelo (p.e. 58%)
+            top: "55%",
             textAlign: "center",
           }}
         >
           <span
             style={{
               color: "#ffffff",
-              fontSize: "28px", // tamaño grande como quieres
+              fontSize: "30px", // tamaño de la fuente del nombre
               fontWeight: 700,
+              fontFamily: "sans-serif",
             }}
           >
             {fullName || "Nombre del participante"}
