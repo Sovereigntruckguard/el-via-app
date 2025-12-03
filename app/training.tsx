@@ -75,8 +75,7 @@ export default function Training() {
   const done = Object.values(completed).filter(Boolean).length;
   const progressPct = total ? Math.round((done / total) * 100) : 0;
 
-  // 🔹 Cuando el estudiante completa TODO el módulo por primera vez, pedimos feedback a Nexus/Arcanum
-  // y marcamos el módulo como COMPLETADO en el sistema global de progreso.
+  // 🔹 Feedback + flag global
   useEffect(() => {
     const shouldRequest =
       total > 0 && done === total && !feedback && !feedbackLoading;
@@ -97,7 +96,6 @@ export default function Training() {
         });
         setFeedback(reply);
 
-        // 🔹 Marcamos el módulo 1 (frases con inspector) como completado
         await setProgressFlag("m1_phrases_completed", true);
       } catch (err) {
         console.error(
@@ -107,7 +105,6 @@ export default function Training() {
         setFeedback(
           "No pudimos generar la retroalimentación en este momento. Intenta más tarde."
         );
-        // IMPORTANTE: si falla la retroalimentación, NO marcamos el módulo como completado globalmente.
       } finally {
         setFeedbackLoading(false);
       }
@@ -329,11 +326,11 @@ export default function Training() {
             <Text style={S.legendText}>Lento</Text>
           </View>
           <View style={S.legendItem}>
-            <Text style={S.legendIcon}>🇺🇸</Text>
+            <Image source={FLAG_US} style={S.legendFlag} resizeMode="contain" />
             <Text style={S.legendText}>Inglés</Text>
           </View>
           <View style={S.legendItem}>
-            <Text style={S.legendIcon}>🇨🇴</Text>
+            <Image source={FLAG_CO} style={S.legendFlag} resizeMode="contain" />
             <Text style={S.legendText}>Español</Text>
           </View>
         </View>
@@ -713,6 +710,10 @@ const S = StyleSheet.create({
   },
   legendIcon: { fontSize: 14 },
   legendText: { color: "#E6B7C8", fontSize: 12, fontWeight: "600" },
+  legendFlag: {
+    width: 18,
+    height: 18,
+  },
 
   card: {
     backgroundColor: "#1E1E1E",
