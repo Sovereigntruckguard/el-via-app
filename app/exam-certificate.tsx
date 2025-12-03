@@ -92,7 +92,7 @@ export default function ExamCertificateScreen() {
       return;
     }
 
-    // ➜ En WEB, mandamos a la pantalla especial de impresión
+    // ➜ En WEB, vamos a la pantalla de impresión dedicada
     if (Platform.OS === "web") {
       router.push("/exam-certificate-print");
       return;
@@ -193,7 +193,7 @@ export default function ExamCertificateScreen() {
           </Text>
         </View>
 
-        {/* PREVIEW DEL CERTIFICADO (igual que antes) */}
+        {/* PREVIEW DEL CERTIFICADO */}
         <Text style={styles.sectionTitle}>Vista previa del certificado</Text>
 
         <View style={styles.previewWrapper}>

@@ -2,7 +2,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
 import {
-    ImageBackground,
+    Image,
     Platform,
     StyleSheet,
     Text,
@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../context/AuthContext";
+import { ROSEN } from "../lib/rosen";
 
 type ExamResult = {
   fullName?: string;
@@ -45,11 +46,15 @@ export default function ExamCertificatePrintScreen() {
   }, [user]);
 
   useEffect(() => {
-    if (Platform.OS === "web" && !loading && result && typeof window !== "undefined") {
-      // damos un pequeño delay para asegurar que se renderice
+    if (
+      Platform.OS === "web" &&
+      !loading &&
+      result &&
+      typeof window !== "undefined"
+    ) {
       setTimeout(() => {
         window.print();
-      }, 300);
+      }, 400);
     }
   }, [loading, result]);
 
@@ -65,22 +70,21 @@ export default function ExamCertificatePrintScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      {/* SOLO el certificado ocupa la pantalla */}
-      <View style={styles.fullWrapper}>
-        <ImageBackground
-          source={require("../assets/certificates/elvia_certificate_base.png")}
-          style={styles.previewImage}
-        >
-          <View style={styles.overlay}>
+      <View style={styles.center}>
+        <View style={styles.certificateBox}>
+          {/* Imagen base del certificado */}
+          <Image
+            source={require("../assets/certificates/elvia_certificate_base.png")}
+            style={styles.certImage}
+            resizeMode="contain"
+          />
+          {/* Nombre centrado en el espacio del certificado */}
+          <View style={styles.nameContainer}>
             <Text style={styles.nameText}>
               {fullName || "Nombre del participante"}
             </Text>
-            <Text style={styles.scoreText}>
-              Puntaje: {result.score.toFixed(1)}% · {result.correctAnswers}/
-              {result.totalQuestions} correctas
-            </Text>
           </View>
-        </ImageBackground>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -89,45 +93,38 @@ export default function ExamCertificatePrintScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: ROSEN.colors.black ?? "#000000",
   },
   center: {
     flex: 1,
-    justifyContent: "center",
     alignItems: "center",
+    justifyContent: "center",
   },
-  loadingText: { color: "#fff" },
-
-  fullWrapper: {
-    flex: 1,
+  loadingText: {
+    color: "#ffffff",
   },
-  previewImage: {
-    flex: 1,
+  certificateBox: {
     width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    // Se imprime toda la imagen; márgenes los maneja el diálogo de impresión
+    maxWidth: 1200,
+    aspectRatio: 1248 / 832, // proporción real de tu PNG
+    position: "relative",
   },
-  overlay: {
+  certImage: {
     width: "100%",
     height: "100%",
+  },
+  nameContainer: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    // Ajusta este valor para dejar el nombre justo en el espacio del certificado
+    top: "47%",
     alignItems: "center",
-    justifyContent: "center",
   },
   nameText: {
-    position: "absolute",
-    // Ajusta estos valores para posicionar el nombre EXACTO en la plantilla
-    top: "46%", // aproximado, mueve si hace falta
-    alignSelf: "center",
     color: "#ffffff",
     fontSize: 24,
     fontWeight: "700",
-  },
-  scoreText: {
-    position: "absolute",
-    top: "52%", // debajo del nombre
-    alignSelf: "center",
-    color: "#ffffff",
-    fontSize: 14,
+    textAlign: "center",
   },
 });
