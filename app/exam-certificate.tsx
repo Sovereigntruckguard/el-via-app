@@ -1,4 +1,3 @@
-// app/exam-certificate.tsx
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -14,7 +13,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { PDFDocument } from "pdf-lib";
 import RoseEmbossedSeal from "../components/RoseEmbossedSeal";
 import { useAuth } from "../context/AuthContext";
 import { ROSEN } from "../lib/rosen";
@@ -34,6 +32,7 @@ const STORAGE_KEY = "elvia_exam_final_result";
 const CERT_SOURCE = require("../assets/certificates/elvia_certificate_base.png");
 
 // PDF formulario oficial con 3 campos de texto
+// Asegúrate que el archivo exista en esta ruta
 const CERT_FORM_PDF = require("../assets/certificates/certificado_formulario.pdf");
 
 export default function ExamCertificateScreen() {
@@ -108,6 +107,10 @@ export default function ExamCertificateScreen() {
     // 🔹 FLUJO WEB → generar PDF real desde el formulario
     if (Platform.OS === "web") {
       try {
+        // Carga dinámica de pdf-lib SOLO cuando el usuario pide el PDF
+        const pdfLib = await import("pdf-lib");
+        const { PDFDocument } = pdfLib;
+
         // 1. Resolvemos URL del PDF estático empaquetado
         const resolved = RNImage.resolveAssetSource(
           CERT_FORM_PDF as any
@@ -125,10 +128,8 @@ export default function ExamCertificateScreen() {
         const pdfDoc = await PDFDocument.load(originalPdfBytes);
         const form = pdfDoc.getForm();
 
-        // ⚠ Los nombres deben coincidir con los de Nitro:
-        // - NombreParticipante
-        // - CodigoCertificacion
-        // - FechaExpedicion
+        // ⚠ Los nombres deben coincidir EXACTO con los campos en tu PDF de Nitro
+        // (ajusta si usaste otros nombres)
         const nameField = form.getTextField("NombreParticipante");
         const codeField = form.getTextField("CodigoCertificacion");
         const dateField = form.getTextField("FechaExpedicion");
@@ -152,11 +153,10 @@ export default function ExamCertificateScreen() {
         // 6. Guardamos el PDF final
         const finalPdfBytes = await pdfDoc.save();
 
-        // 7. Descarga en el navegador – casteamos para calmar a TypeScript
-        const blob = new Blob(
-          [finalPdfBytes as unknown as BlobPart],
-          { type: "application/pdf" }
-        );
+        // 7. Descarga en el navegador
+        const blob = new Blob([finalPdfBytes as any], {
+          type: "application/pdf",
+        });
 
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
