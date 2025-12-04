@@ -16,7 +16,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import RoseEmbossedSeal from "../components/RoseEmbossedSeal";
 import { useAuth } from "../context/AuthContext";
 import { ROSEN } from "../lib/rosen";
-import { CertificateData, openCertificateFlow } from "../services/certificate";
 
 type ExamResult = {
   fullName?: string;
@@ -28,15 +27,13 @@ type ExamResult = {
 
 const STORAGE_KEY = "elvia_exam_final_result";
 
-// PNG para vista previa en la app
-const CERT_SOURCE = require("../assets/certificates/elvia_certificate_base.png");
-
-// URL web del PNG para usarlo en la ventana de impresión
-const CERT_IMAGE_WEB: string = require("../assets/certificates/elvia_certificate_base.png");
+// PNG base del certificado (diseño de lujo, sin textos dinámicos)
+const CERT_SOURCE: any = require("../assets/certificates/elvia_certificate_base.png");
 
 export default function ExamCertificateScreen() {
   const router = useRouter();
-  const { user, isPaid } = useAuth();
+  const { user } = useAuth();
+
   const [loading, setLoading] = useState(true);
   const [result, setResult] = useState<ExamResult | null>(null);
   const [fullName, setFullName] = useState("");
@@ -56,7 +53,6 @@ export default function ExamCertificateScreen() {
 
         const parsed: ExamResult = JSON.parse(stored);
 
-        // Nombre OFICIAL desde AuthContext (perfil del usuario)
         const authName =
           user?.name && user.name.trim().length > 0 ? user.name.trim() : "";
 
@@ -80,14 +76,6 @@ export default function ExamCertificateScreen() {
       return;
     }
 
-    if (!isPaid) {
-      Alert.alert(
-        "Función protegida",
-        "La generación de certificados está disponible solo para cuentas activas EL-VÍA (pago confirmado)."
-      );
-      return;
-    }
-
     if (!fullName.trim()) {
       Alert.alert(
         "Nombre no configurado",
@@ -96,164 +84,132 @@ export default function ExamCertificateScreen() {
       return;
     }
 
-    const updatedResult: ExamResult = {
-      ...result,
-      fullName: fullName.trim(),
-    };
+    const nombre = fullName.trim();
+    const scoreText = `${result.score.toFixed(1)}% · ${result.correctAnswers}/${result.totalQuestions} correctas`;
+    const fechaText = new Date(result.completedAt).toLocaleDateString("es-ES", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+    const codigo = buildCertificateId(result);
 
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedResult));
-
-    const certId = buildCertificateId(updatedResult);
-
-    // 🔹 FLUJO WEB → vista de certificado en HTML + print del navegador
+    // SOLO en web abrimos ventana para imprimir/guardar PDF
     if (Platform.OS === "web") {
-      try {
-        const nombre = updatedResult.fullName ?? "";
-        const fecha = new Date(updatedResult.completedAt).toLocaleDateString(
-          "es-ES",
-          {
-            day: "2-digit",
-            month: "long",
-            year: "numeric",
-          }
-        );
-        const scoreLabel = `${updatedResult.score.toFixed(1)}% · ${updatedResult.correctAnswers}/${updatedResult.totalQuestions} correctas`;
+      const certUrl = CERT_SOURCE?.default ?? CERT_SOURCE;
 
-        const certImgUrl = CERT_IMAGE_WEB;
+      const win = window.open("", "_blank", "width=1200,height=900");
+      if (!win) return;
 
-        const win = window.open("", "_blank", "width=1200,height=900");
-        if (!win) return;
+      win.document.write(`
+        <html>
+          <head>
+            <meta charSet="utf-8" />
+            <title>Certificado EL-VÍA</title>
+            <style>
+              * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        win.document.write(`
-          <html>
-            <head>
-              <meta charSet="utf-8" />
-              <title>Certificado EL-VÍA</title>
-              <style>
-                * {
-                  box-sizing: border-box;
-                }
-                @page {
-                  size: landscape;
-                  margin: 0;
-                }
-                body {
+              body {
+                margin: 0;
+                padding: 0;
+                background: #000;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+              }
+
+              .page {
+                width: 100vw;
+                height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+              }
+
+              .cert-container {
+                position: relative;
+                width: 90vw;
+                max-width: 1200px;
+                aspect-ratio: 1248 / 832;
+              }
+
+              .cert-img {
+                width: 100%;
+                height: 100%;
+                display: block;
+              }
+
+              .nombre {
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: 47%;
+                text-align: center;
+                color: #ffffff;
+                font-size: 28px;
+                font-weight: 700;
+              }
+
+              .linea-secundaria {
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: 53%;
+                text-align: center;
+                color: #ffffff;
+                font-size: 13px;
+              }
+
+              .footer {
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 10%;
+                text-align: center;
+                color: #ffffff;
+                font-size: 13px;
+              }
+
+              @media print {
+                @page { size: landscape; margin: 0; }
+                html, body {
                   margin: 0;
                   padding: 0;
-                  background: #000;
-                  -webkit-print-color-adjust: exact;
-                  print-color-adjust: exact;
-                  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-                }
-                .page {
-                  width: 100vw;
-                  height: 100vh;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                }
-                .cert-container {
-                  position: relative;
-                  width: 90vw;
-                  max-width: 1200px;
-                  aspect-ratio: 16/9;
-                }
-                .cert-container img {
                   width: 100%;
                   height: 100%;
-                  display: block;
                 }
-                .cert-name {
-                  position: absolute;
-                  left: 0;
-                  right: 0;
-                  top: 48%;
-                  text-align: center;
-                  color: #ffffff;
-                  font-size: 28px;
-                  font-weight: 700;
-                  text-shadow: 0 0 6px rgba(0,0,0,0.7);
-                }
-                .cert-score {
-                  position: absolute;
-                  left: 0;
-                  right: 0;
-                  top: 53%;
-                  text-align: center;
-                  color: #ffffff;
-                  font-size: 11px;
-                  font-weight: 400;
-                }
-                .cert-footer {
-                  position: absolute;
-                  left: 8%;
-                  right: 8%;
-                  bottom: 6%;
-                  display: flex;
-                  justify-content: space-between;
-                  font-size: 11px;
-                  color: #ffffff;
-                }
-              </style>
-            </head>
-            <body>
-              <div class="page">
-                <div class="cert-container">
-                  <img src="${certImgUrl}" alt="Certificado EL-VÍA" />
-                  <div class="cert-name">${nombre}</div>
-                  <div class="cert-score">Puntaje: ${scoreLabel}</div>
-                  <div class="cert-footer">
-                    <div>Código: ${certId}</div>
-                    <div>Fecha de expedición: ${fecha}</div>
-                  </div>
+              }
+            </style>
+          </head>
+          <body>
+            <div class="page">
+              <div class="cert-container">
+                <img src="${certUrl}" class="cert-img" alt="Certificado EL-VÍA" />
+                <div class="nombre">${nombre}</div>
+                <div class="linea-secundaria">Puntaje: ${scoreText}</div>
+                <div class="footer">
+                  Código de certificación: ${codigo} · Fecha de expedición: ${fechaText}
                 </div>
               </div>
-              <script>
-                window.onload = function() {
-                  window.focus();
-                  window.print();
-                };
-              </script>
-            </body>
-          </html>
-        `);
+            </div>
+            <script>
+              window.onload = function() {
+                window.focus();
+                window.print();
+              };
+            </script>
+          </body>
+        </html>
+      `);
 
-        win.document.close();
-        return;
-      } catch (e) {
-        console.error("Error generando certificado web (HTML):", e);
-        Alert.alert(
-          "Error",
-          "No fue posible preparar el certificado para impresión en la versión web."
-        );
-        return;
-      }
+      win.document.close();
+      return;
     }
 
-    // 🔹 FLUJO MÓVIL → seguimos con tu lógica actual (openCertificateFlow)
-    try {
-      const payload: CertificateData = {
-        fullName: fullName.trim(),
-        score: result.score,
-        correctAnswers: result.correctAnswers,
-        totalQuestions: result.totalQuestions,
-        completedAt: result.completedAt,
-        certificateId: certId,
-      };
-
-      await openCertificateFlow(payload);
-
-      await AsyncStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({ ...result, fullName: fullName.trim() })
-      );
-    } catch (error) {
-      console.error("Error generando certificado (móvil):", error);
-      Alert.alert(
-        "Error",
-        "No fue posible generar el certificado. Revisa la conexión o vuelve a intentarlo."
-      );
-    }
+    // En móvil, por ahora solo mostramos aviso (puedes luego usar openCertificateFlow)
+    Alert.alert(
+      "Disponible en versión web",
+      "La descarga automática del certificado en PDF está disponible cuando accedes a EL-VÍA desde un navegador."
+    );
   };
 
   if (loading) {
@@ -294,8 +250,6 @@ export default function ExamCertificateScreen() {
         {/* DATOS PRINCIPALES */}
         <View style={styles.card}>
           <Text style={styles.label}>Nombre completo para el certificado</Text>
-
-          {/* Campo NO editable */}
           <View style={styles.readonlyField}>
             <Text style={styles.readonlyText}>
               {fullName || "Configura tu nombre en el perfil"}
@@ -350,8 +304,8 @@ export default function ExamCertificateScreen() {
         {/* BOTONES */}
         <View style={styles.buttonsRow}>
           <Text style={styles.helperText}>
-            Al tocar el botón, se abrirá el cuadro de impresión/guardar PDF del
-            navegador con tu certificado.
+            Al tocar el botón, se abrirá el certificado listo para imprimir o guardar en
+            PDF.
           </Text>
 
           <View style={styles.actionsRow}>
