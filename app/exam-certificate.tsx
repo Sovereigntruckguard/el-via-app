@@ -31,10 +31,6 @@ const STORAGE_KEY = "elvia_exam_final_result";
 // PNG para vista previa en la app
 const CERT_SOURCE = require("../assets/certificates/elvia_certificate_base.png");
 
-// PDF formulario oficial con campos de texto.
-// En web, este require se resuelve a una URL estática.
-const CERT_FORM_PDF_WEB: string = require("../assets/certificates/certificado_formulario.pdf");
-
 export default function ExamCertificateScreen() {
   const router = useRouter();
   const { user, isPaid } = useAuth();
@@ -106,18 +102,19 @@ export default function ExamCertificateScreen() {
 
     const certId = buildCertificateId(updatedResult);
 
-    // 🔹 FLUJO WEB → generar PDF real desde el formulario
+    // 🔹 FLUJO WEB → generar PDF real desde el formulario (PDF en public/)
     if (Platform.OS === "web") {
       try {
-        // Cargamos pdf-lib solo cuando hace falta
         const { PDFDocument } = await import("pdf-lib");
 
-        const pdfUrl = CERT_FORM_PDF_WEB;
-        if (!pdfUrl) {
-          throw new Error("No se pudo resolver la URL del PDF de plantilla");
-        }
+        // El archivo está en /public/certificado_formulario.pdf
+        const pdfUrl = "/certificado_formulario.pdf";
 
         const res = await fetch(pdfUrl);
+        if (!res.ok) {
+          throw new Error(`No se pudo descargar el PDF base: ${res.status}`);
+        }
+
         const originalPdfBytes = await res.arrayBuffer();
 
         const pdfDoc = await PDFDocument.load(originalPdfBytes);
