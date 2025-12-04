@@ -6,6 +6,7 @@ import {
   Alert,
   ImageBackground,
   Platform,
+  Image as RNImage,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,6 +14,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { PDFDocument } from "pdf-lib";
 import RoseEmbossedSeal from "../components/RoseEmbossedSeal";
 import { useAuth } from "../context/AuthContext";
 import { ROSEN } from "../lib/rosen";
@@ -28,7 +30,11 @@ type ExamResult = {
 
 const STORAGE_KEY = "elvia_exam_final_result";
 
+// PNG para vista previa en la app
 const CERT_SOURCE = require("../assets/certificates/elvia_certificate_base.png");
+
+// PDF formulario oficial con 3 campos de texto
+const CERT_FORM_PDF = require("../assets/certificates/certificado_formulario.pdf");
 
 export default function ExamCertificateScreen() {
   const router = useRouter();
@@ -76,7 +82,6 @@ export default function ExamCertificateScreen() {
       return;
     }
 
-    // Protección: solo cuentas con pago activo
     if (!isPaid) {
       Alert.alert(
         "Función protegida",
@@ -85,7 +90,6 @@ export default function ExamCertificateScreen() {
       return;
     }
 
-    // Protección: nombre obligatorio desde perfil
     if (!fullName.trim()) {
       Alert.alert(
         "Nombre no configurado",
@@ -94,7 +98,6 @@ export default function ExamCertificateScreen() {
       return;
     }
 
-    // Actualizamos el resultado con el nombre definitivo
     const updatedResult: ExamResult = {
       ...result,
       fullName: fullName.trim(),
@@ -102,13 +105,81 @@ export default function ExamCertificateScreen() {
 
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedResult));
 
-    // ➜ FLUJO ESPECIAL PARA WEB: vamos a la pantalla de impresión
+    // 🔹 FLUJO WEB → generar PDF real desde el formulario
     if (Platform.OS === "web") {
-      router.push("/exam-certificate-print");
-      return;
+      try {
+        // 1. Resolvemos URL del PDF estático empaquetado
+        const resolved = RNImage.resolveAssetSource(
+          CERT_FORM_PDF as any
+        ) as { uri?: string };
+        const pdfUrl = resolved?.uri;
+        if (!pdfUrl) {
+          throw new Error("No se pudo resolver la URL del PDF de plantilla");
+        }
+
+        // 2. Descargamos el PDF como bytes
+        const res = await fetch(pdfUrl);
+        const originalPdfBytes = await res.arrayBuffer();
+
+        // 3. Cargamos el PDF en pdf-lib
+        const pdfDoc = await PDFDocument.load(originalPdfBytes);
+        const form = pdfDoc.getForm();
+
+        // ⚠ Los nombres deben coincidir con los de Nitro:
+        // - NombreParticipante
+        // - CodigoCertificacion
+        // - FechaExpedicion
+        const nameField = form.getTextField("NombreParticipante");
+        const codeField = form.getTextField("CodigoCertificacion");
+        const dateField = form.getTextField("FechaExpedicion");
+
+        const certId = buildCertificateId(updatedResult);
+
+        // 4. Rellenamos los campos
+        nameField.setText(updatedResult.fullName ?? "");
+        codeField.setText(certId);
+        dateField.setText(
+          new Date(updatedResult.completedAt).toLocaleDateString("es-ES", {
+            day: "2-digit",
+            month: "long",
+            year: "numeric",
+          })
+        );
+
+        // 5. Aplanamos el formulario
+        form.flatten();
+
+        // 6. Guardamos el PDF final
+        const finalPdfBytes = await pdfDoc.save();
+
+        // 7. Descarga en el navegador – casteamos para calmar a TypeScript
+        const blob = new Blob(
+          [finalPdfBytes as unknown as BlobPart],
+          { type: "application/pdf" }
+        );
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `Certificado_ELVIA_${updatedResult.fullName?.replace(
+          /\s+/g,
+          "_"
+        )}.pdf`;
+        a.click();
+        URL.revokeObjectURL(url);
+
+        return;
+      } catch (e) {
+        console.error("Error generando certificado web:", e);
+        Alert.alert(
+          "Error",
+          "No fue posible generar el certificado automático en PDF en la versión web."
+        );
+        return;
+      }
     }
 
-    // ➜ FLUJO MÓVIL: mantenemos tu lógica original (PDF nativo)
+    // 🔹 FLUJO MÓVIL → seguimos con tu lógica actual (openCertificateFlow)
     try {
       const payload: CertificateData = {
         fullName: fullName.trim(),
@@ -121,13 +192,12 @@ export default function ExamCertificateScreen() {
 
       await openCertificateFlow(payload);
 
-      // Guardamos el resultado con ese nombre (solo referencia)
       await AsyncStorage.setItem(
         STORAGE_KEY,
         JSON.stringify({ ...result, fullName: fullName.trim() })
       );
     } catch (error) {
-      console.error("Error generando certificado:", error);
+      console.error("Error generando certificado (móvil):", error);
       Alert.alert(
         "Error",
         "No fue posible generar el certificado. Revisa la conexión o vuelve a intentarlo."
@@ -229,8 +299,7 @@ export default function ExamCertificateScreen() {
         {/* BOTONES */}
         <View style={styles.buttonsRow}>
           <Text style={styles.helperText}>
-            Al tocar el botón, se abrirá el cuadro de impresión o compartir para que
-            guardes o imprimas tu certificado en PDF.
+            Al tocar el botón, se descargará tu certificado automático en PDF.
           </Text>
 
           <View style={styles.actionsRow}>
@@ -363,7 +432,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     overflow: "hidden",
     borderWidth: 1,
-    borderColor: "rgba(255,215,0,0.4)",
+    borderColor: "rgba(255,255,255,0.4)",
     marginBottom: 24,
   },
   previewImage: {
