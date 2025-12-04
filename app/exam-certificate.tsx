@@ -12,7 +12,6 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 import RoseEmbossedSeal from "../components/RoseEmbossedSeal";
 import { useAuth } from "../context/AuthContext";
 import { ROSEN } from "../lib/rosen";
@@ -27,8 +26,15 @@ type ExamResult = {
 
 const STORAGE_KEY = "elvia_exam_final_result";
 
-// PNG base del certificado (diseño de lujo, sin textos dinámicos)
-const CERT_SOURCE: any = require("../assets/certificates/elvia_certificate_base.png");
+// Ruta fija en `public/`
+const CERT_WEB_PATH = "/certificates/elvia_certificate_base.png";
+
+const getCertSource = () => {
+  if (Platform.OS === "web") {
+    return { uri: CERT_WEB_PATH };
+  }
+  return require("../assets/certificates/elvia_certificate_base.png");
+};
 
 export default function ExamCertificateScreen() {
   const router = useRouter();
@@ -84,18 +90,21 @@ export default function ExamCertificateScreen() {
       return;
     }
 
-    const nombre = fullName.trim();
-    const scoreText = `${result.score.toFixed(1)}% · ${result.correctAnswers}/${result.totalQuestions} correctas`;
-    const fechaText = new Date(result.completedAt).toLocaleDateString("es-ES", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    });
-    const codigo = buildCertificateId(result);
+    const updatedResult: ExamResult = {
+      ...result,
+      fullName: fullName.trim(),
+    };
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedResult));
 
-    // SOLO en web abrimos ventana para imprimir/guardar PDF
     if (Platform.OS === "web") {
-      const certUrl = CERT_SOURCE?.default ?? CERT_SOURCE;
+      const imgUrl = window.location.origin + CERT_WEB_PATH;
+      const nameText = updatedResult.fullName;
+      const scoreText = `${updatedResult.score.toFixed(1)}% · ${updatedResult.correctAnswers}/${updatedResult.totalQuestions} correctas`;
+      const dateText = new Date(updatedResult.completedAt).toLocaleDateString(
+        "es-ES",
+        { day: "2-digit", month: "long", year: "numeric" }
+      );
+      const certId = buildCertificateId(updatedResult);
 
       const win = window.open("", "_blank", "width=1200,height=900");
       if (!win) return;
@@ -103,11 +112,10 @@ export default function ExamCertificateScreen() {
       win.document.write(`
         <html>
           <head>
-            <meta charSet="utf-8" />
+            <meta charset="utf-8" />
             <title>Certificado EL-VÍA</title>
             <style>
               * { box-sizing: border-box; margin: 0; padding: 0; }
-
               body {
                 margin: 0;
                 padding: 0;
@@ -116,7 +124,6 @@ export default function ExamCertificateScreen() {
                 print-color-adjust: exact;
                 font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
               }
-
               .page {
                 width: 100vw;
                 height: 100vh;
@@ -124,54 +131,51 @@ export default function ExamCertificateScreen() {
                 justify-content: center;
                 align-items: center;
               }
-
               .cert-container {
                 position: relative;
-                width: 90vw;
-                max-width: 1200px;
-                aspect-ratio: 1248 / 832;
-              }
-
-              .cert-img {
                 width: 100%;
                 height: 100%;
+              }
+              .cert-container img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
                 display: block;
               }
-
-              .nombre {
+              .cert-name {
                 position: absolute;
                 left: 0;
                 right: 0;
-                top: 47%;
+                top: 48%;
                 text-align: center;
                 color: #ffffff;
                 font-size: 28px;
                 font-weight: 700;
               }
-
-              .linea-secundaria {
+              .cert-score {
                 position: absolute;
                 left: 0;
                 right: 0;
-                top: 53%;
+                top: 55%;
                 text-align: center;
                 color: #ffffff;
-                font-size: 13px;
+                font-size: 14px;
               }
-
-              .footer {
+              .cert-footer {
                 position: absolute;
                 left: 0;
                 right: 0;
-                bottom: 10%;
+                bottom: 5%;
                 text-align: center;
                 color: #ffffff;
-                font-size: 13px;
+                font-size: 12px;
               }
-
               @media print {
-                @page { size: landscape; margin: 0; }
-                html, body {
+                @page {
+                  size: landscape;
+                  margin: 0;
+                }
+                body, html {
                   margin: 0;
                   padding: 0;
                   width: 100%;
@@ -183,32 +187,27 @@ export default function ExamCertificateScreen() {
           <body>
             <div class="page">
               <div class="cert-container">
-                <img src="${certUrl}" class="cert-img" alt="Certificado EL-VÍA" />
-                <div class="nombre">${nombre}</div>
-                <div class="linea-secundaria">Puntaje: ${scoreText}</div>
-                <div class="footer">
-                  Código de certificación: ${codigo} · Fecha de expedición: ${fechaText}
+                <img src="${imgUrl}" alt="Certificado EL-VÍA" />
+                <div class="cert-name">${nameText}</div>
+                <div class="cert-score">${scoreText}</div>
+                <div class="cert-footer">
+                  Código de certificación: ${certId} · Fecha de expedición: ${dateText}
                 </div>
               </div>
             </div>
-            <script>
-              window.onload = function() {
-                window.focus();
-                window.print();
-              };
-            </script>
           </body>
         </html>
       `);
 
       win.document.close();
+      win.focus();
+      win.print();
       return;
     }
 
-    // En móvil, por ahora solo mostramos aviso (puedes luego usar openCertificateFlow)
     Alert.alert(
       "Disponible en versión web",
-      "La descarga automática del certificado en PDF está disponible cuando accedes a EL-VÍA desde un navegador."
+      "Puedes descargar tu certificado como PDF desde la versión web de EL-VÍA."
     );
   };
 
@@ -234,6 +233,8 @@ export default function ExamCertificateScreen() {
     );
   }
 
+  const certSource = getCertSource();
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -243,11 +244,11 @@ export default function ExamCertificateScreen() {
 
         <Text style={styles.title}>Certificado EL-VÍA DOT Express</Text>
         <Text style={styles.subtitle}>
-          Has alcanzado el nivel de aprobación requerido. Verifica tus datos y genera tu
-          certificado oficial.
+          Has alcanzado el nivel de aprobación requerido. Verifica tus datos y
+          genera tu certificado oficial.
         </Text>
 
-        {/* DATOS PRINCIPALES */}
+        {/* Datos del resultado */}
         <View style={styles.card}>
           <Text style={styles.label}>Nombre completo para el certificado</Text>
           <View style={styles.readonlyField}>
@@ -279,12 +280,11 @@ export default function ExamCertificateScreen() {
           </Text>
         </View>
 
-        {/* PREVIEW DEL CERTIFICADO */}
+        {/* Vista previa */}
         <Text style={styles.sectionTitle}>Vista previa del certificado</Text>
-
         <View style={styles.previewWrapper}>
           <ImageBackground
-            source={CERT_SOURCE}
+            source={certSource}
             style={styles.previewImage}
             imageStyle={{ borderRadius: 24 }}
           >
@@ -301,11 +301,11 @@ export default function ExamCertificateScreen() {
           </ImageBackground>
         </View>
 
-        {/* BOTONES */}
+        {/* Botones */}
         <View style={styles.buttonsRow}>
           <Text style={styles.helperText}>
-            Al tocar el botón, se abrirá el certificado listo para imprimir o guardar en
-            PDF.
+            Al tocar el botón, se abrirá la vista de impresión para guardar tu
+            certificado como PDF.
           </Text>
 
           <View style={styles.actionsRow}>
@@ -330,14 +330,14 @@ function buildCertificateId(result: ExamResult): string {
     .toISOString()
     .slice(0, 10)
     .replace(/-/g, "");
-  const random = Math.floor(Math.random() * 9000) + 1000;
+  const random = Math.floor(Math.floor(Math.random() * 9000) + 1000);
   return `ELVIA-${datePart}-${random}`;
 }
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: ROSEN.colors.black ?? "#050509",
+    backgroundColor: ROSEN.colors.black ?? "#000000",
   },
   scrollContent: {
     padding: 20,
@@ -438,7 +438,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     overflow: "hidden",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.4)",
+    borderColor: "rgba(255,255,255,0.2)",
     marginBottom: 24,
   },
   previewImage: {
