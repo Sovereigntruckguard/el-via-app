@@ -26,13 +26,14 @@ type ExamResult = {
 
 const STORAGE_KEY = "elvia_exam_final_result";
 
-// Ruta fija en `public/`
+// Imagen de certificado en `public/certificates/elvia_certificate_base.png`
 const CERT_WEB_PATH = "/certificates/elvia_certificate_base.png";
 
 const getCertSource = () => {
   if (Platform.OS === "web") {
     return { uri: CERT_WEB_PATH };
   }
+  // Para la preview en la app nativa, si quieres reutilizar el asset
   return require("../assets/certificates/elvia_certificate_base.png");
 };
 
@@ -99,7 +100,6 @@ export default function ExamCertificateScreen() {
     if (Platform.OS === "web") {
       const imgUrl = window.location.origin + CERT_WEB_PATH;
       const nameText = updatedResult.fullName;
-      const scoreText = `${updatedResult.score.toFixed(1)}% · ${updatedResult.correctAnswers}/${updatedResult.totalQuestions} correctas`;
       const dateText = new Date(updatedResult.completedAt).toLocaleDateString(
         "es-ES",
         { day: "2-digit", month: "long", year: "numeric" }
@@ -142,34 +142,39 @@ export default function ExamCertificateScreen() {
                 object-fit: contain;
                 display: block;
               }
+
+              /* Nombre: justo debajo de "Se otorga el presente reconocimiento a" */
               .cert-name {
                 position: absolute;
                 left: 0;
                 right: 0;
-                top: 48%;
+                top: 52%;
                 text-align: center;
                 color: #ffffff;
-                font-size: 28px;
+                font-size: 26px;
                 font-weight: 700;
               }
-              .cert-score {
+
+              /* Código: parte superior derecha, donde dice "Código de certificación:" en la imagen */
+              .cert-code {
                 position: absolute;
-                left: 0;
-                right: 0;
-                top: 55%;
-                text-align: center;
+                right: 15%;
+                top: 12%;
                 color: #ffffff;
                 font-size: 14px;
+                font-weight: 500;
               }
-              .cert-footer {
+
+              /* Fecha: parte inferior izquierda, donde dice "Fecha de expedición:" en la imagen */
+              .cert-date {
                 position: absolute;
-                left: 0;
-                right: 0;
-                bottom: 5%;
-                text-align: center;
+                left: 23%;
+                bottom: 8%;
                 color: #ffffff;
-                font-size: 12px;
+                font-size: 14px;
+                font-weight: 500;
               }
+
               @media print {
                 @page {
                   size: landscape;
@@ -189,10 +194,8 @@ export default function ExamCertificateScreen() {
               <div class="cert-container">
                 <img src="${imgUrl}" alt="Certificado EL-VÍA" />
                 <div class="cert-name">${nameText}</div>
-                <div class="cert-score">${scoreText}</div>
-                <div class="cert-footer">
-                  Código de certificación: ${certId} · Fecha de expedición: ${dateText}
-                </div>
+                <div class="cert-code">${certId}</div>
+                <div class="cert-date">${dateText}</div>
               </div>
             </div>
           </body>
@@ -248,7 +251,7 @@ export default function ExamCertificateScreen() {
           genera tu certificado oficial.
         </Text>
 
-        {/* Datos del resultado */}
+        {/* Datos previos (pantalla, NO impresión) */}
         <View style={styles.card}>
           <Text style={styles.label}>Nombre completo para el certificado</Text>
           <View style={styles.readonlyField}>
@@ -280,7 +283,7 @@ export default function ExamCertificateScreen() {
           </Text>
         </View>
 
-        {/* Vista previa */}
+        {/* PREVIEW del certificado con puntaje */}
         <Text style={styles.sectionTitle}>Vista previa del certificado</Text>
         <View style={styles.previewWrapper}>
           <ImageBackground
@@ -330,7 +333,7 @@ function buildCertificateId(result: ExamResult): string {
     .toISOString()
     .slice(0, 10)
     .replace(/-/g, "");
-  const random = Math.floor(Math.floor(Math.random() * 9000) + 1000);
+  const random = Math.floor(Math.random() * 9000) + 1000;
   return `ELVIA-${datePart}-${random}`;
 }
 
