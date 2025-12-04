@@ -31,6 +31,9 @@ const STORAGE_KEY = "elvia_exam_final_result";
 // PNG para vista previa en la app
 const CERT_SOURCE = require("../assets/certificates/elvia_certificate_base.png");
 
+// URL web del PNG para usarlo en la ventana de impresión
+const CERT_IMAGE_WEB: string = require("../assets/certificates/elvia_certificate_base.png");
+
 export default function ExamCertificateScreen() {
   const router = useRouter();
   const { user, isPaid } = useAuth();
@@ -102,64 +105,126 @@ export default function ExamCertificateScreen() {
 
     const certId = buildCertificateId(updatedResult);
 
-    // 🔹 FLUJO WEB → generar PDF real desde el formulario (PDF en public/)
+    // 🔹 FLUJO WEB → vista de certificado en HTML + print del navegador
     if (Platform.OS === "web") {
       try {
-        const { PDFDocument } = await import("pdf-lib");
-
-        // El archivo está en /public/certificado_formulario.pdf
-        const pdfUrl = "/certificado_formulario.pdf";
-
-        const res = await fetch(pdfUrl);
-        if (!res.ok) {
-          throw new Error(`No se pudo descargar el PDF base: ${res.status}`);
-        }
-
-        const originalPdfBytes = await res.arrayBuffer();
-
-        const pdfDoc = await PDFDocument.load(originalPdfBytes);
-        const form = pdfDoc.getForm();
-
-        // ⚠ Asegúrate que estos nombres coincidan con los campos en Nitro
-        const nameField = form.getTextField("NombreParticipante");
-        const codeField = form.getTextField("CodigoCertificacion");
-        const dateField = form.getTextField("FechaExpedicion");
-
-        nameField.setText(updatedResult.fullName ?? "");
-        codeField.setText(certId);
-        dateField.setText(
-          new Date(updatedResult.completedAt).toLocaleDateString("es-ES", {
+        const nombre = updatedResult.fullName ?? "";
+        const fecha = new Date(updatedResult.completedAt).toLocaleDateString(
+          "es-ES",
+          {
             day: "2-digit",
             month: "long",
             year: "numeric",
-          })
+          }
         );
+        const scoreLabel = `${updatedResult.score.toFixed(1)}% · ${updatedResult.correctAnswers}/${updatedResult.totalQuestions} correctas`;
 
-        form.flatten();
+        const certImgUrl = CERT_IMAGE_WEB;
 
-        const finalPdfBytes = await pdfDoc.save();
+        const win = window.open("", "_blank", "width=1200,height=900");
+        if (!win) return;
 
-        // Descarga en el navegador
-        const blob = new Blob([finalPdfBytes as any], {
-          type: "application/pdf",
-        });
+        win.document.write(`
+          <html>
+            <head>
+              <meta charSet="utf-8" />
+              <title>Certificado EL-VÍA</title>
+              <style>
+                * {
+                  box-sizing: border-box;
+                }
+                @page {
+                  size: landscape;
+                  margin: 0;
+                }
+                body {
+                  margin: 0;
+                  padding: 0;
+                  background: #000;
+                  -webkit-print-color-adjust: exact;
+                  print-color-adjust: exact;
+                  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                }
+                .page {
+                  width: 100vw;
+                  height: 100vh;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                }
+                .cert-container {
+                  position: relative;
+                  width: 90vw;
+                  max-width: 1200px;
+                  aspect-ratio: 16/9;
+                }
+                .cert-container img {
+                  width: 100%;
+                  height: 100%;
+                  display: block;
+                }
+                .cert-name {
+                  position: absolute;
+                  left: 0;
+                  right: 0;
+                  top: 48%;
+                  text-align: center;
+                  color: #ffffff;
+                  font-size: 28px;
+                  font-weight: 700;
+                  text-shadow: 0 0 6px rgba(0,0,0,0.7);
+                }
+                .cert-score {
+                  position: absolute;
+                  left: 0;
+                  right: 0;
+                  top: 53%;
+                  text-align: center;
+                  color: #ffffff;
+                  font-size: 11px;
+                  font-weight: 400;
+                }
+                .cert-footer {
+                  position: absolute;
+                  left: 8%;
+                  right: 8%;
+                  bottom: 6%;
+                  display: flex;
+                  justify-content: space-between;
+                  font-size: 11px;
+                  color: #ffffff;
+                }
+              </style>
+            </head>
+            <body>
+              <div class="page">
+                <div class="cert-container">
+                  <img src="${certImgUrl}" alt="Certificado EL-VÍA" />
+                  <div class="cert-name">${nombre}</div>
+                  <div class="cert-score">Puntaje: ${scoreLabel}</div>
+                  <div class="cert-footer">
+                    <div>Código: ${certId}</div>
+                    <div>Fecha de expedición: ${fecha}</div>
+                  </div>
+                </div>
+              </div>
+              <script>
+                window.onload = function() {
+                  window.focus();
+                  window.print();
+                };
+              </script>
+            </body>
+          </html>
+        `);
 
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `Certificado_ELVIA_${updatedResult.fullName?.replace(
-          /\s+/g,
-          "_"
-        )}.pdf`;
-        a.click();
-        URL.revokeObjectURL(url);
-
+        win.document.close();
         return;
       } catch (e) {
-        console.error("Error generando certificado web:", e);
+        console.error("Error generando certificado web (HTML):", e);
         Alert.alert(
           "Error",
-          "No fue posible generar el certificado automático en PDF en la versión web."
+          "No fue posible preparar el certificado para impresión en la versión web."
         );
         return;
       }
@@ -285,7 +350,8 @@ export default function ExamCertificateScreen() {
         {/* BOTONES */}
         <View style={styles.buttonsRow}>
           <Text style={styles.helperText}>
-            Al tocar el botón, se descargará tu certificado automático en PDF.
+            Al tocar el botón, se abrirá el cuadro de impresión/guardar PDF del
+            navegador con tu certificado.
           </Text>
 
           <View style={styles.actionsRow}>
