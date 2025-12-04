@@ -159,7 +159,7 @@ export default function ExamCertificateScreen() {
               .cert-code {
                 position: absolute;
                 right: 6%;
-                top: 7%;
+                top: 5%;
                 color: #ffffff;
                 font-size: 14px;
                 font-weight: 500;
@@ -168,8 +168,8 @@ export default function ExamCertificateScreen() {
               /* Fecha: parte inferior izquierda, donde dice "Fecha de expedición:" en la imagen */
               .cert-date {
                 position: absolute;
-                left: 40%;
-                bottom: 9%;
+                left: 36%;
+                bottom: 10%;
                 color: #ffffff;
                 font-size: 14px;
                 font-weight: 500;
