@@ -1,3 +1,4 @@
+// app/exam-certificate.tsx
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -5,7 +6,6 @@ import {
   Alert,
   ImageBackground,
   Platform,
-  Image as RNImage,
   ScrollView,
   StyleSheet,
   Text,
@@ -31,9 +31,9 @@ const STORAGE_KEY = "elvia_exam_final_result";
 // PNG para vista previa en la app
 const CERT_SOURCE = require("../assets/certificates/elvia_certificate_base.png");
 
-// PDF formulario oficial con 3 campos de texto
-// Asegúrate que el archivo exista en esta ruta
-const CERT_FORM_PDF = require("../assets/certificates/certificado_formulario.pdf");
+// PDF formulario oficial con campos de texto.
+// En web, este require se resuelve a una URL estática.
+const CERT_FORM_PDF_WEB: string = require("../assets/certificates/certificado_formulario.pdf");
 
 export default function ExamCertificateScreen() {
   const router = useRouter();
@@ -104,39 +104,30 @@ export default function ExamCertificateScreen() {
 
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedResult));
 
+    const certId = buildCertificateId(updatedResult);
+
     // 🔹 FLUJO WEB → generar PDF real desde el formulario
     if (Platform.OS === "web") {
       try {
-        // Carga dinámica de pdf-lib SOLO cuando el usuario pide el PDF
-        const pdfLib = await import("pdf-lib");
-        const { PDFDocument } = pdfLib;
+        // Cargamos pdf-lib solo cuando hace falta
+        const { PDFDocument } = await import("pdf-lib");
 
-        // 1. Resolvemos URL del PDF estático empaquetado
-        const resolved = RNImage.resolveAssetSource(
-          CERT_FORM_PDF as any
-        ) as { uri?: string };
-        const pdfUrl = resolved?.uri;
+        const pdfUrl = CERT_FORM_PDF_WEB;
         if (!pdfUrl) {
           throw new Error("No se pudo resolver la URL del PDF de plantilla");
         }
 
-        // 2. Descargamos el PDF como bytes
         const res = await fetch(pdfUrl);
         const originalPdfBytes = await res.arrayBuffer();
 
-        // 3. Cargamos el PDF en pdf-lib
         const pdfDoc = await PDFDocument.load(originalPdfBytes);
         const form = pdfDoc.getForm();
 
-        // ⚠ Los nombres deben coincidir EXACTO con los campos en tu PDF de Nitro
-        // (ajusta si usaste otros nombres)
+        // ⚠ Asegúrate que estos nombres coincidan con los campos en Nitro
         const nameField = form.getTextField("NombreParticipante");
         const codeField = form.getTextField("CodigoCertificacion");
         const dateField = form.getTextField("FechaExpedicion");
 
-        const certId = buildCertificateId(updatedResult);
-
-        // 4. Rellenamos los campos
         nameField.setText(updatedResult.fullName ?? "");
         codeField.setText(certId);
         dateField.setText(
@@ -147,13 +138,11 @@ export default function ExamCertificateScreen() {
           })
         );
 
-        // 5. Aplanamos el formulario
         form.flatten();
 
-        // 6. Guardamos el PDF final
         const finalPdfBytes = await pdfDoc.save();
 
-        // 7. Descarga en el navegador
+        // Descarga en el navegador
         const blob = new Blob([finalPdfBytes as any], {
           type: "application/pdf",
         });
@@ -187,7 +176,7 @@ export default function ExamCertificateScreen() {
         correctAnswers: result.correctAnswers,
         totalQuestions: result.totalQuestions,
         completedAt: result.completedAt,
-        certificateId: buildCertificateId(result),
+        certificateId: certId,
       };
 
       await openCertificateFlow(payload);
