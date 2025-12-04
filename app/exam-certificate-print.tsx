@@ -1,8 +1,18 @@
 // app/exam-certificate-print.tsx
+// Pantalla dedicada a IMPRIMIR el certificado en WEB
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
-import { Platform } from "react-native";
+import {
+    Dimensions,
+    ImageBackground,
+    Platform,
+    StyleSheet,
+    Text,
+    View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../context/AuthContext";
+import { ROSEN } from "../lib/rosen";
 
 type ExamResult = {
   fullName?: string;
@@ -13,132 +23,179 @@ type ExamResult = {
 };
 
 const STORAGE_KEY = "elvia_exam_final_result";
+const CERT_SOURCE = require("../assets/certificates/elvia_certificate_base.png");
 
 export default function ExamCertificatePrintScreen() {
   const { user } = useAuth();
-  const [fullName, setFullName] = useState<string>("");
+  const [result, setResult] = useState<ExamResult | null>(null);
+  const [ready, setReady] = useState(false);
 
-  // 1. Cargamos el nombre desde Auth + AsyncStorage
+  // Cargar datos del examen desde AsyncStorage
   useEffect(() => {
     (async () => {
       try {
         const stored = await AsyncStorage.getItem(STORAGE_KEY);
-        if (stored) {
-          const parsed = JSON.parse(stored) as ExamResult;
-          const authName =
-            user?.name && user.name.trim().length > 0 ? user.name.trim() : "";
-          setFullName(authName || parsed.fullName || "");
+        if (!stored) {
+          return;
         }
+        const parsed: ExamResult = JSON.parse(stored);
+        setResult(parsed);
       } catch (e) {
-        console.error("[CERT_PRINT] Error leyendo resultado:", e);
+        console.log("[CERT_PRINT] Error leyendo resultado:", e);
       }
     })();
-  }, [user]);
-
-  // 2. Inyectar un poco de CSS para asegurar que se impriman colores / imagen
-  useEffect(() => {
-    if (Platform.OS === "web" && typeof document !== "undefined") {
-      const style = document.createElement("style");
-      style.id = "elvia-cert-print-style";
-      style.innerHTML = `
-        @media print {
-          body {
-            margin: 0;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-          }
-        }
-      `;
-      document.head.appendChild(style);
-      return () => {
-        const existing = document.getElementById("elvia-cert-print-style");
-        if (existing && existing.parentNode) {
-          existing.parentNode.removeChild(existing);
-        }
-      };
-    }
   }, []);
 
-  // 3. Lanzar el diálogo de impresión cuando el nombre esté listo
+  // Cuando hay datos y ya se renderizó al menos una vez, disparamos print en web
   useEffect(() => {
-    if (
-      Platform.OS === "web" &&
-      fullName &&
-      typeof window !== "undefined"
-    ) {
+    if (Platform.OS === "web" && result && ready && typeof window !== "undefined") {
       const id = setTimeout(() => {
         window.print();
-      }, 400);
+      }, 600);
       return () => clearTimeout(id);
     }
-  }, [fullName]);
+  }, [result, ready]);
 
-  // En mobile no usamos esta pantalla, solo en web
-  if (Platform.OS !== "web") {
-    return null;
+  if (!result) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.center}>
+          <Text style={styles.loadingText}>Preparando certificado…</Text>
+        </View>
+      </SafeAreaView>
+    );
   }
 
-  // 4. Obtener la URL real del PNG para usarla en <img>
-  // @ts-ignore
-  const certAsset = require("../assets/certificates/elvia_certificate_base.png") as any;
-  const src: string = certAsset?.src ?? certAsset;
+  const fullName =
+    (result.fullName && result.fullName.trim()) ||
+    (user?.name && user.name.trim()) ||
+    "Nombre del participante";
+
+  const fecha = new Date(result.completedAt).toLocaleDateString("es-ES", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+
+  // Código simple; si quieres, luego usamos tu lógica de código oficial
+  const certCode = `ELVIA-${new Date(result.completedAt)
+    .toISOString()
+    .slice(0, 10)
+    .replace(/-/g, "")}`;
+
+  const { width } = Dimensions.get("window");
+  const certWidth = Math.min(width - 32, 1200);
+  const aspect = 832 / 1248; // proporción real aproximada de tu diseño
+  const certHeight = certWidth * aspect;
 
   return (
-    <div
-      style={{
-        backgroundColor: "#000",
-        minHeight: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        margin: 0,
-        padding: 0,
-      }}
-    >
-      <div
-        style={{
-          position: "relative",
-          width: "90vw",
-          maxWidth: "1200px",
-          aspectRatio: "1248 / 832", // proporción real del certificado
-        }}
-      >
-        {/* Imagen completa del certificado */}
-        <img
-          src={src}
-          alt="Certificado EL-VÍA"
-          style={{
-            width: "100%",
-            height: "100%",
-            display: "block",
-          }}
-        />
-
-        {/* Nombre colocado en el área que marcaste */}
-        <div
-          style={{
-            position: "absolute",
-            left: 0,
-            right: 0,
-            // 🔥 Aquí ajustamos verticalmente el nombre:
-            //  - Para subirlo: baja este valor (p.e. 52%)
-            //  - Para bajarlo: súbelo (p.e. 58%)
-            top: "55%",
-            textAlign: "center",
-          }}
-        >
-          <span
-            style={{
-              color: "#ffffff",
-              fontSize: "30px", // tamaño de la fuente del nombre
-              fontWeight: 700,
-              fontFamily: "sans-serif",
-            }}
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.root} onLayout={() => setReady(true)}>
+        <View style={{ width: certWidth, height: certHeight }}>
+          <ImageBackground
+            source={CERT_SOURCE}
+            style={styles.bg}
+            imageStyle={{ resizeMode: "cover" }}
           >
-            {fullName || "Nombre del participante"}
-          </span>
-        </div>
-      </div>
-    </div>
+            {/* Overlay con nombre, fecha y código */}
+            <View style={styles.overlay}>
+              {/* Código de certificación arriba derecha */}
+              <View style={styles.codeContainer}>
+                <Text style={styles.codeLabel}>Código de certificación:</Text>
+                <Text style={styles.codeValue}>{certCode}</Text>
+              </View>
+
+              {/* Nombre en el centro */}
+              <View style={styles.nameContainer}>
+                <Text style={styles.nameText}>{fullName}</Text>
+              </View>
+
+              {/* Fecha abajo centro */}
+              <View style={styles.dateContainer}>
+                <Text style={styles.dateLabel}>Fecha de expedición:</Text>
+                <Text style={styles.dateValue}>{fecha}</Text>
+              </View>
+            </View>
+          </ImageBackground>
+        </View>
+      </View>
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: ROSEN.colors.black ?? "#000000",
+  },
+  root: {
+    flex: 1,
+    backgroundColor: ROSEN.colors.black ?? "#000000",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  bg: {
+    flex: 1,
+  },
+  overlay: {
+    flex: 1,
+  },
+  loadingText: {
+    color: "#ffffff",
+  },
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  // Código de certificación (arriba derecha, dentro del marco)
+  codeContainer: {
+    position: "absolute",
+    top: 40, // ajusta fino según tu marco
+    right: 80,
+    alignItems: "flex-end",
+  },
+  codeLabel: {
+    color: "#ffffff",
+    fontSize: 14,
+  },
+  codeValue: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+
+  // Nombre centrado (en la zona que definiste)
+  nameContainer: {
+    position: "absolute",
+    top: "49%", // SUBE o BAJA este valor para posicionarlo exacto
+    left: 0,
+    right: 0,
+    alignItems: "center",
+  },
+  nameText: {
+    color: "#ffffff",
+    fontSize: 30,
+    fontWeight: "700",
+    textAlign: "center",
+  },
+
+  // Fecha cerca de la parte inferior
+  dateContainer: {
+    position: "absolute",
+    bottom: 70, // mueve este valor para bajarla/subirla
+    left: 0,
+    right: 0,
+    alignItems: "center",
+  },
+  dateLabel: {
+    color: "#ffffff",
+    fontSize: 14,
+  },
+  dateValue: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+});

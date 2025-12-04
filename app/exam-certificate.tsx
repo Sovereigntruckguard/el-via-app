@@ -6,7 +6,6 @@ import {
   Alert,
   ImageBackground,
   Platform,
-  Image as RNImage,
   ScrollView,
   StyleSheet,
   Text,
@@ -95,104 +94,21 @@ export default function ExamCertificateScreen() {
       return;
     }
 
-    // ➜ FLUJO ESPECIAL PARA WEB (PDF exacto con la plantilla)
+    // Actualizamos el resultado con el nombre definitivo
+    const updatedResult: ExamResult = {
+      ...result,
+      fullName: fullName.trim(),
+    };
+
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedResult));
+
+    // ➜ FLUJO ESPECIAL PARA WEB: vamos a la pantalla de impresión
     if (Platform.OS === "web") {
-      try {
-        // Resolvemos la URL real del asset para usarlo en <img>
-        const resolved = RNImage.resolveAssetSource(CERT_SOURCE);
-        const imgUrl = resolved?.uri ?? "";
-
-        const nameText = fullName.trim();
-
-        // Abrimos ventana nueva con HTML puro (solo certificado + nombre)
-        const win = window.open("", "_blank", "width=1200,height=900");
-        if (!win) return;
-
-        win.document.write(`
-          <html>
-            <head>
-              <meta charSet="utf-8" />
-              <title>Certificado EL-VÍA</title>
-              <style>
-                * { box-sizing: border-box; }
-                body {
-                  margin: 0;
-                  padding: 0;
-                  background: #000;
-                  -webkit-print-color-adjust: exact;
-                  print-color-adjust: exact;
-                  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-                }
-                .page {
-                  width: 100vw;
-                  height: 100vh;
-                  display: flex;
-                  justify-content: center;
-                  align-items: center;
-                }
-                .cert-container {
-                  position: relative;
-                  width: 90vw;
-                  max-width: 1200px;
-                  aspect-ratio: 1248 / 832;
-                }
-                .cert-container img {
-                  width: 100%;
-                  height: 100%;
-                  display: block;
-                }
-                .cert-name {
-                  position: absolute;
-                  left: 0;
-                  right: 0;
-                  top: 52%; /* ajustar si lo quieres un poco más arriba/abajo */
-                  text-align: center;
-                  color: #fff;
-                  font-size: 30px;
-                  font-weight: 700;
-                }
-                @media print {
-                  body, html {
-                    margin: 0;
-                    padding: 0;
-                    width: 100%;
-                    height: 100%;
-                  }
-                }
-              </style>
-            </head>
-            <body>
-              <div class="page">
-                <div class="cert-container">
-                  <img src="${imgUrl}" alt="Certificado EL-VÍA" />
-                  <div class="cert-name">${nameText}</div>
-                </div>
-              </div>
-            </body>
-          </html>
-        `);
-
-        win.document.close();
-        win.focus();
-        win.print();
-        // win.close(); // si quieres cerrar la pestaña automáticamente
-
-        // Guardamos el resultado con ese nombre (solo referencia)
-        await AsyncStorage.setItem(
-          STORAGE_KEY,
-          JSON.stringify({ ...result, fullName: fullName.trim() })
-        );
-      } catch (e) {
-        console.error("Error generando certificado en web:", e);
-        Alert.alert(
-          "Error",
-          "No fue posible preparar el PDF del certificado en web."
-        );
-      }
+      router.push("/exam-certificate-print");
       return;
     }
 
-    // ➜ FLUJO MÓVIL: mantenemos tu lógica original
+    // ➜ FLUJO MÓVIL: mantenemos tu lógica original (PDF nativo)
     try {
       const payload: CertificateData = {
         fullName: fullName.trim(),
