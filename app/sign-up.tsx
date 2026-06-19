@@ -1,25 +1,43 @@
 // app/sign-up.tsx
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Google from "expo-auth-session/providers/google";
 import { useRouter } from "expo-router";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import React, { useState } from "react";
+import * as WebBrowser from "expo-web-browser";
 import {
-    ActivityIndicator,
-    Image,
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithCredential,
+} from "firebase/auth";
+import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../context/AuthContext";
 import { ROSEN } from "../lib/rosen";
 import { auth } from "../services/firebase";
 
+WebBrowser.maybeCompleteAuthSession();
+
 const LOGO = require("../assets/elvia-logo.png");
+const GOOGLE_SIGNIN = require("../assets/icons/google-signin.png");
+
+// IDs de cliente OAuth
+const GOOGLE_WEB_CLIENT_ID =
+  "301738681066-rr4n7uh9qrus99gqcgpp0pui14e01i7g.apps.googleusercontent.com";
+
+const GOOGLE_ANDROID_CLIENT_ID =
+  "301738681066-j77lo611n6392l2tik0vs6vaekc66ar6.apps.googleusercontent.com";
 
 export default function SignUpScreen() {
   const router = useRouter();
@@ -31,6 +49,120 @@ export default function SignUpScreen() {
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  // Si Firebase ya tiene usuario, mandamos directo a /home
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (fbUser) => {
+      if (fbUser) {
+        console.log("Sign-up detecta usuario activo, navegando a /home");
+        router.replace("/home");
+      }
+    });
+    return unsub;
+  }, []);
+
+  // 🔑 Configuración Google Auth: un solo clientId según plataforma
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    clientId:
+      Platform.OS === "android"
+        ? GOOGLE_ANDROID_CLIENT_ID
+        : GOOGLE_WEB_CLIENT_ID,
+    scopes: ["openid", "profile", "email"],
+  });
+
+  // Manejar respuesta de Google → Firebase Auth
+  useEffect(() => {
+    const handleGoogleResponse = async () => {
+      if (!response) return;
+
+      try {
+        console.log("Google response:", JSON.stringify(response));
+
+        if (response.type !== "success") {
+          console.log("Google login NO success, type:", response.type);
+          return;
+        }
+
+        setGoogleLoading(true);
+        setError(null);
+
+        const anyResponse: any = response;
+
+        // Intentamos ambas formas de obtener el idToken
+        const idToken =
+          anyResponse?.authentication?.idToken ||
+          anyResponse?.params?.id_token;
+
+        console.log("idToken presente:", !!idToken);
+
+        if (!idToken) {
+          Alert.alert(
+            "Error",
+            "No pudimos obtener el token de Google. Intenta de nuevo."
+          );
+          return;
+        }
+
+        const credential = GoogleAuthProvider.credential(idToken);
+        const result = await signInWithCredential(auth, credential);
+
+        const gUser = result.user;
+        console.log("Firebase Google user UID:", gUser.uid);
+
+        const displayName =
+          fullName.trim() ||
+          gUser.displayName ||
+          gUser.email?.split("@")[0] ||
+          "";
+
+        if (displayName) {
+          await setName(displayName);
+        }
+
+        await setPaid(true);
+
+        if (gUser.email) {
+          await AsyncStorage.setItem("elvia:auth:email", gUser.email);
+        }
+
+        console.log("Navegando a /home desde Google Sign-In");
+        router.replace("/home");
+      } catch (e: any) {
+        console.log("Error en handleGoogleResponse:", e);
+        Alert.alert(
+          "Error",
+          "No pudimos completar el acceso con Google. Intenta de nuevo."
+        );
+      } finally {
+        setGoogleLoading(false);
+      }
+    };
+
+    handleGoogleResponse();
+  }, [response]);
+
+  const handleGoogleSignIn = async () => {
+    if (!request) {
+      Alert.alert(
+        "Espera",
+        "Aún estamos preparando el acceso con Google. Intenta de nuevo en unos segundos."
+      );
+      return;
+    }
+    setGoogleLoading(true);
+    setError(null);
+    try {
+      await promptAsync();
+    } catch (e: any) {
+      console.log("Error en promptAsync Google:", e);
+      Alert.alert(
+        "Error",
+        "No pudimos abrir el acceso con Google. Revisa tu conexión e intenta de nuevo."
+      );
+      setGoogleLoading(false);
+    }
+  };
 
   const handleSignUp = async () => {
     setError(null);
@@ -54,19 +186,11 @@ export default function SignUpScreen() {
     try {
       setLoading(true);
 
-      // 1. Crear usuario en Firebase Auth
       await createUserWithEmailAndPassword(auth, trimmedEmail, password);
-
-      // 2. Guardar nombre completo en AuthContext (displayName + AsyncStorage)
       await setName(trimmedName);
-
-      // 3. Marcar acceso de pago localmente
       await setPaid(true);
-
-      // 4. (Opcional) guardar email por referencia local
       await AsyncStorage.setItem("elvia:auth:email", trimmedEmail);
 
-      // 5. Enviar al Home (desde allí entra al manual / módulos)
       router.replace("/home");
     } catch (e: any) {
       console.log("Error signUp:", e);
@@ -92,17 +216,45 @@ export default function SignUpScreen() {
         style={S.container}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        {/* LOGO arriba centrado */}
+        {/* MINI HERO */}
         <View style={S.logoWrap}>
           <Image source={LOGO} style={S.logo} resizeMode="contain" />
+          <Text style={S.heroTitle}>
+            Crea tu acceso gratuito para entrenar inspecciones DOT con IA.
+          </Text>
+          <Text style={S.heroSub}>
+            Toma menos de 30 segundos. Tu certificado final usará este nombre.
+          </Text>
         </View>
 
         <View style={S.card}>
-          <Text style={S.title}>Crear acceso ELVIA</Text>
-          <Text style={S.subtitle}>
-            Registra tu cuenta para comenzar el programa y generar tu
-            certificado oficial.
-          </Text>
+          {/* BOTÓN GOOGLE */}
+          <Pressable
+            style={[S.googleBtn, (googleLoading || !request) && S.btnDisabled]}
+            onPress={handleGoogleSignIn}
+            disabled={googleLoading || !request}
+          >
+            {googleLoading ? (
+              <ActivityIndicator color="#111827" />
+            ) : (
+              <View style={S.googleInner}>
+                <Image
+                  source={GOOGLE_SIGNIN}
+                  style={S.googleLogo}
+                  resizeMode="contain"
+                />
+              </View>
+            )}
+          </Pressable>
+
+          <View style={S.separatorRow}>
+            <View style={S.separatorLine} />
+            <Text style={S.separatorText}>o crea tu acceso con tu correo</Text>
+            <View style={S.separatorLine} />
+          </View>
+
+          {/* FORMULARIO */}
+          <Text style={S.sectionLabel}>Datos para tu certificado</Text>
 
           <Text style={S.label}>Nombre completo</Text>
           <TextInput
@@ -113,6 +265,13 @@ export default function SignUpScreen() {
             value={fullName}
             onChangeText={setFullName}
           />
+          <Text style={S.helperText}>
+            Así aparecerá en tu certificado oficial EL-VÍA.
+          </Text>
+
+          <Text style={[S.sectionLabel, { marginTop: 16 }]}>
+            Datos de acceso
+          </Text>
 
           <Text style={S.label}>Correo electrónico</Text>
           <TextInput
@@ -192,6 +351,19 @@ const S = StyleSheet.create({
     height: 60,
     opacity: 0.98,
   },
+  heroTitle: {
+    color: ROSEN.colors.white,
+    fontSize: 16,
+    fontWeight: "800",
+    textAlign: "center",
+    marginTop: 8,
+  },
+  heroSub: {
+    color: ROSEN.colors.mute,
+    fontSize: 12,
+    textAlign: "center",
+    marginTop: 4,
+  },
   card: {
     backgroundColor: ROSEN.colors.card,
     borderRadius: 16,
@@ -199,20 +371,59 @@ const S = StyleSheet.create({
     borderColor: ROSEN.colors.border,
     padding: 20,
   },
-  title: {
-    color: ROSEN.colors.white,
-    fontSize: 22,
-    fontWeight: "900",
-    marginBottom: 6,
+
+  // Google button
+  googleBtn: {
+    backgroundColor: "#F9FAFB",
+    borderRadius: 999,
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: "#D1D5DB",
+    marginBottom: 16,
   },
-  subtitle: {
+  googleInner: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  googleLogo: {
+    width: "100%",
+    height: 36,
+  },
+
+  separatorRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 12,
+  },
+  separatorLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "rgba(148,163,184,0.5)",
+  },
+  separatorText: {
     color: ROSEN.colors.mute,
-    marginBottom: 18,
+    fontSize: 11,
   },
+
+  sectionLabel: {
+    color: ROSEN.colors.mute,
+    fontSize: 12,
+    fontWeight: "700",
+    marginBottom: 4,
+  },
+
   label: {
     color: ROSEN.colors.roseDeep,
     fontWeight: "800",
     marginTop: 8,
+  },
+  helperText: {
+    color: ROSEN.colors.mute,
+    fontSize: 11,
+    marginTop: 2,
   },
   input: {
     marginTop: 4,

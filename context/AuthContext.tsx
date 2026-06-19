@@ -13,9 +13,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import "../services/firebase";
-import { getAuth } from "firebase/auth";
-const auth = getAuth();
+import { auth } from "../services/firebase";
 
 type User = {
   uid: string;
@@ -28,7 +26,6 @@ type Ctx = {
   isAuthenticated: boolean;
   isPaid: boolean;
   loading: boolean;
-  // ⚠️ el segundo parámetro ahora se usa como CONTRASEÑA
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   setName: (name: string) => Promise<void>;
@@ -46,7 +43,7 @@ const Auth = createContext<Ctx>({
   setPaid: async () => {},
 });
 
-const KEY_U = "elvia:user"; // ahora lo usamos solo para nombre local
+const KEY_U = "elvia:user";
 const KEY_P = "elvia:isPaid";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -92,11 +89,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const isAuthenticated = !!user;
 
-  // signIn real con Firebase (email + password)
   const signIn = async (email: string, password: string) => {
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email.trim(), password);
+      await signInWithEmailAndPassword(auth, email.trim().toLowerCase(), password);
       // onAuthStateChanged actualizará el user
     } finally {
       setLoading(false);
@@ -110,7 +106,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await AsyncStorage.multiRemove([KEY_U, KEY_P]);
   };
 
-  // Actualizar nombre (displayName en Firebase + cache local)
   const setName = async (name: string) => {
     const current = auth.currentUser;
     try {
@@ -122,15 +117,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     setUser((u) => {
-      const nu = u ? { ...u, name } : u;
-      if (nu) {
-        AsyncStorage.setItem(KEY_U, JSON.stringify({ name }));
+      const next = u ? { ...u, name } : u;
+      if (next) {
+        AsyncStorage.setItem(KEY_U, JSON.stringify({ name })).catch(() => {});
       }
-      return nu;
+      return next;
     });
   };
 
-  // Flag de pago (por ahora local; luego lo ligamos a Wompi/backend)
   const setPaid = async (paid: boolean) => {
     setIsPaid(paid);
     await AsyncStorage.setItem(KEY_P, paid ? "true" : "false");

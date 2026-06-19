@@ -11,7 +11,8 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSMicrophoneUsageDescription": "Necesitamos usar el micrófono para que puedas practicar pronunciación y participar en roleplays dentro de ELVIA DOT Express."
+        "NSMicrophoneUsageDescription": "Necesitamos usar el micrófono para que puedas practicar pronunciación y participar en roleplays dentro de ELVIA DOT Express.",
+        "NSSpeechRecognitionUsageDescription": "Allow $(PRODUCT_NAME) to use speech recognition."
       }
     },
     "android": {
@@ -22,7 +23,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "permissions": [
-        "RECORD_AUDIO"
+        "RECORD_AUDIO",
+        "android.permission.RECORD_AUDIO"
       ],
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
@@ -47,11 +49,19 @@
         }
       ],
       "expo-speech-recognition",
-      "expo-asset"
+      "expo-asset",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "2a36116b-f407-45b8-a959-befa0f425b32"
+      }
+    },
+    "owner": "sergio1219sovereign"
   }
 }

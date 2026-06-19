@@ -1,43 +1,70 @@
 // app/checkout.tsx
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import {
+  Alert,
   Image,
-  Linking,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuth } from "../context/AuthContext";
 import { ROSEN } from "../lib/rosen";
-
-const STRIPE_ELVIA_URL =
-  "https://buy.stripe.com/9B63cxd6Feb76oD88V9Zm00";
+import { purchasePro } from "../services/purchases";
 
 const LOGO = require("../assets/elvia-logo.png");
 
 export default function Checkout() {
   const router = useRouter();
+  const { refreshProStatus, setPaid } = useAuth();
+  const [processing, setProcessing] = useState(false);
 
-  const handleStripePay = async () => {
+  const handlePurchasePro = async () => {
+    if (processing) return;
+    setProcessing(true);
+
     try {
-      const canOpen = await Linking.canOpenURL(STRIPE_ELVIA_URL);
-      if (!canOpen) {
-        console.error("[CHECKOUT] No se puede abrir el navegador para Stripe.");
+      const { success, cancelled } = await purchasePro();
+
+      if (success) {
+        await refreshProStatus();
+        await setPaid(true);
+        Alert.alert(
+          "Acceso activado",
+          "Has desbloqueado EL-VÍA PRO. Ya puedes acceder a todos los módulos y exámenes."
+        );
+        // Llevar al usuario al inicio
+        router.push("/home" as never);
         return;
       }
-      await Linking.openURL(STRIPE_ELVIA_URL);
-      // Versión 1.0:
-      // El usuario paga en Stripe, vuelve manualmente a la app
-      // y luego usa "Ya pagué, crear mi acceso".
+
+      if (cancelled) {
+        Alert.alert(
+          "Compra cancelada",
+          "No se completó el pago. Puedes intentarlo de nuevo cuando quieras."
+        );
+        return;
+      }
+
+      Alert.alert(
+        "Error en la compra",
+        "Ocurrió un problema al procesar el pago. Intenta de nuevo o contacta soporte."
+      );
     } catch (err) {
-      console.error("[CHECKOUT] Error abriendo Stripe:", err);
+      console.warn("[CHECKOUT] Error en purchasePro:", err);
+      Alert.alert(
+        "Error inesperado",
+        "No pudimos completar el proceso. Verifica tu conexión e inténtalo de nuevo."
+      );
+    } finally {
+      setProcessing(false);
     }
   };
 
-  const handleCreateAccess = () => {
-    // Lo llevamos al formulario de registro
+  const handleGoToSignUp = () => {
+    // Para usuarios que ya pagaron o quieren crear su usuario después de la compra
     router.push("/sign-up" as never);
   };
 
@@ -50,43 +77,48 @@ export default function Checkout() {
         </View>
 
         <View style={S.card}>
-          <Text style={S.title}>Acceso al programa completo</Text>
+          <Text style={S.title}>Desbloquea EL-VÍA PRO</Text>
           <Text style={S.desc}>
-            Incluye todos los módulos, audios, roleplays, señales y exámenes
-            certificables. Acceso permanente al contenido y a tu certificado.
+            Acceso total a todos los módulos, audios, roleplays, señales y
+            exámenes certificables. Incluye tu certificado final listo para
+            imprimir.
           </Text>
 
-          <Text style={S.price}>USD 199</Text>
+          <Text style={S.price}>USD 19.99</Text>
           <Text style={S.subPrice}>
-            Pago seguro con Stripe. Puedes pagar en dólares o en tu moneda, tu
-            banco hace la conversión.
+            Pago único desde Google Play. Sin suscripciones, sin cobros
+            mensuales. Pagas una vez y el acceso es tuyo para siempre.
           </Text>
 
-          {/* Botón 1 – Pagar con Stripe */}
+          {/* Botón 1 – Comprar EL-VÍA PRO */}
           <TouchableOpacity
-            style={S.btnPrimary}
-            onPress={handleStripePay}
+            style={[S.btnPrimary, processing && S.btnDisabled]}
+            onPress={handlePurchasePro}
             activeOpacity={0.9}
+            disabled={processing}
           >
-            <Text style={S.btnPrimaryText}>Pagar con tarjeta (Stripe)</Text>
+            <Text style={S.btnPrimaryText}>
+              {processing ? "Procesando compra..." : "Desbloquear EL-VÍA PRO"}
+            </Text>
           </TouchableOpacity>
 
-          {/* Botón 2 – Ya pagó, crear acceso */}
+          {/* Botón 2 – Crear acceso / ya pagué */}
           <TouchableOpacity
             style={S.btnSecondary}
-            onPress={handleCreateAccess}
+            onPress={handleGoToSignUp}
             activeOpacity={0.9}
           >
             <Text style={S.btnSecondaryText}>
-              Ya pagué en Stripe, crear mi acceso
+              Ya tengo acceso, crear mi usuario
             </Text>
           </TouchableOpacity>
 
           <Text style={S.note}>
-            1) Primero realiza el pago en Stripe.{"\n"}
-            2) Luego vuelve a ELVIA y toca “Ya pagué en Stripe, crear mi
-            acceso” para registrar tu correo, contraseña y nombre COMPLETO.{"\n"}
-            Ese nombre será el que aparecerá en tu certificado oficial.
+            1) Completa el pago con tu cuenta de Google.{"\n"}
+            2) Luego crea tu usuario y contraseña para guardar tu progreso y
+            generar tu certificado con tu nombre completo.{"\n"}
+            3) Si ya tenías acceso, solo inicia sesión desde la pantalla
+            principal.
           </Text>
         </View>
       </View>
@@ -144,6 +176,9 @@ const S = StyleSheet.create({
     borderWidth: 1,
     borderColor: ROSEN.colors.roseDeep,
     marginBottom: 10,
+  },
+  btnDisabled: {
+    opacity: 0.7,
   },
   btnPrimaryText: {
     textAlign: "center",

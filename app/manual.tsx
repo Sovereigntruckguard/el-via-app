@@ -2,6 +2,7 @@
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
+  Alert,
   Image,
   Pressable,
   ScrollView,
@@ -12,6 +13,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import RoseEmbossedSeal from "../components/RoseEmbossedSeal";
+import { useAuth } from "../context/AuthContext";
 import { ROSEN } from "../lib/rosen";
 import {
   canTakeCertExam,
@@ -23,6 +25,7 @@ const LOGO = require("../assets/elvia-logo.png");
 
 export default function Manual() {
   const router = useRouter();
+  const { isPaid } = useAuth();
   const [courseProgress, setCourseProgress] = useState<ModuleProgressFlags | null>(
     null
   );
@@ -34,11 +37,84 @@ export default function Manual() {
     })();
   }, []);
 
-  // 🔹 Reglas de desbloqueo
+  // 🔹 Reglas de desbloqueo por progreso
   const canExamM2 = !!courseProgress?.m1_phrases_completed;
   const canExamM3 = !!courseProgress?.m3_signals_completed;
   const canExamFinal =
     courseProgress != null ? canTakeCertExam(courseProgress) : false;
+
+  // 🔹 Helpers para PRO
+  const goToCheckout = () => {
+    router.push("/checkout" as never);
+  };
+
+  const requireProAlert = () => {
+    Alert.alert(
+      "Disponible en EL-VÍA PRO",
+      "Para acceder a este módulo necesitas activar EL-VÍA PRO. Es un pago único desde Google Play (~USD 19.99)."
+    );
+  };
+
+  const handleRoleplaysPress = () => {
+    if (!isPaid) {
+      requireProAlert();
+      goToCheckout();
+      return;
+    }
+    router.push("/roleplays" as never);
+  };
+
+  const handlePronunciationPress = () => {
+    if (!isPaid) {
+      requireProAlert();
+      goToCheckout();
+      return;
+    }
+    router.push("/pronunciation" as never);
+  };
+
+  const handleExamM3Press = () => {
+    if (!isPaid) {
+      requireProAlert();
+      goToCheckout();
+      return;
+    }
+    if (!canExamM3) {
+      Alert.alert(
+        "Aún no desbloqueado",
+        "Primero completa el contenido de señales de tránsito para habilitar este examen."
+      );
+      return;
+    }
+    router.push("/exam-m3" as never);
+  };
+
+  const handleExamFinalPress = () => {
+    if (!isPaid) {
+      requireProAlert();
+      goToCheckout();
+      return;
+    }
+    if (!canExamFinal) {
+      Alert.alert(
+        "Aún no desbloqueado",
+        "Debes completar los módulos previos y exámenes para habilitar el examen certificable."
+      );
+      return;
+    }
+    router.push("/exam-final" as never);
+  };
+
+  const handleExamM2Press = () => {
+    if (!canExamM2) {
+      Alert.alert(
+        "Aún no desbloqueado",
+        "Primero completa las frases con el inspector para habilitar este examen."
+      );
+      return;
+    }
+    router.push("/exam-m2" as never);
+  };
 
   return (
     <SafeAreaView style={S.safe}>
@@ -54,44 +130,61 @@ export default function Manual() {
         <Text style={S.title}>Plan 7 días – ELVIA • DOT Express</Text>
         <Text style={S.desc}>20 minutos diarios. Enfocado en inspección DOT.</Text>
 
-        {/* Módulos de contenido */}
+        {isPaid ? (
+          <View style={S.badgePro}>
+            <Text style={S.badgeProText}>✔ Tienes EL-VÍA PRO activo</Text>
+          </View>
+        ) : (
+          <View style={S.badgeFree}>
+            <Text style={S.badgeFreeText}>
+              Estás en modo gratuito. Puedes desbloquear todo con EL-VÍA PRO.
+            </Text>
+          </View>
+        )}
+
+        {/* Módulos de contenido (FREE) */}
         <TouchableOpacity
           style={S.btnPrimary}
-          onPress={() => router.push("/training")}
+          onPress={() => router.push("/training" as never)}
           activeOpacity={0.9}
         >
-          <Text style={S.btnPrimaryText}>Frases con inspector</Text>
+          <Text style={S.btnPrimaryText}>Frases con inspector (FREE)</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={S.btnOutline}
-          onPress={() => router.push("/glossary")}
+          onPress={() => router.push("/glossary" as never)}
           activeOpacity={0.9}
         >
-          <Text style={S.btnOutlineText}>Señales de tránsito</Text>
+          <Text style={S.btnOutlineText}>Señales de tránsito (FREE)</Text>
+        </TouchableOpacity>
+
+        {/* PRO – Roleplays y Pronunciación */}
+        <TouchableOpacity
+          style={[S.btnOutline, !isPaid && S.btnProLocked]}
+          onPress={handleRoleplaysPress}
+          activeOpacity={0.9}
+        >
+          <Text style={[S.btnOutlineText, !isPaid && S.btnProLockedText]}>
+            Roleplays (30) {isPaid ? "(PRO)" : "— Requiere PRO"}
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={S.btnOutline}
-          onPress={() => router.push("/roleplays")}
+          style={[S.btnOutline, !isPaid && S.btnProLocked]}
+          onPress={handlePronunciationPress}
           activeOpacity={0.9}
         >
-          <Text style={S.btnOutlineText}>Roleplays (30)</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={S.btnOutline}
-          onPress={() => router.push("/pronunciation")}
-          activeOpacity={0.9}
-        >
-          <Text style={S.btnOutlineText}>Pronunciación</Text>
+          <Text style={[S.btnOutlineText, !isPaid && S.btnProLockedText]}>
+            Pronunciación {isPaid ? "(PRO)" : "— Requiere PRO"}
+          </Text>
         </TouchableOpacity>
 
         {/* Exámenes */}
         <TouchableOpacity
           style={[S.btnInfo, !canExamM2 && S.btnInfoDisabled]}
           disabled={!canExamM2}
-          onPress={() => router.push("/exam-m2")}
+          onPress={handleExamM2Press}
           activeOpacity={0.9}
         >
           <Text
@@ -100,41 +193,58 @@ export default function Manual() {
               !canExamM2 && S.btnInfoTextDisabled,
             ]}
           >
-            Examen frases con inspector
+            Examen frases con inspector (FREE)
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[S.btnInfo, !canExamM3 && S.btnInfoDisabled]}
-          disabled={!canExamM3}
-          onPress={() => router.push("/exam-m3")}
+          style={[
+            S.btnInfo,
+            (!isPaid || !canExamM3) && S.btnInfoDisabled,
+          ]}
+          disabled={!isPaid || !canExamM3}
+          onPress={handleExamM3Press}
           activeOpacity={0.9}
         >
           <Text
             style={[
               S.btnInfoText,
-              !canExamM3 && S.btnInfoTextDisabled,
+              (!isPaid || !canExamM3) && S.btnInfoTextDisabled,
             ]}
           >
-            Examen señales de tránsito
+            Examen señales de tránsito {isPaid ? "" : "— Requiere PRO"}
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[S.btnInfo, !canExamFinal && S.btnInfoDisabled]}
-          disabled={!canExamFinal}
-          onPress={() => router.push("/exam-final")}
+          style={[
+            S.btnInfo,
+            (!isPaid || !canExamFinal) && S.btnInfoDisabled,
+          ]}
+          disabled={!isPaid || !canExamFinal}
+          onPress={handleExamFinalPress}
           activeOpacity={0.9}
         >
           <Text
             style={[
               S.btnInfoText,
-              !canExamFinal && S.btnInfoTextDisabled,
+              (!isPaid || !canExamFinal) && S.btnInfoTextDisabled,
             ]}
           >
-            Examen certificable
+            Examen certificable {isPaid ? "" : "— Requiere PRO"}
           </Text>
         </TouchableOpacity>
+
+        {/* CTA PRO si está en modo FREE */}
+        {!isPaid && (
+          <TouchableOpacity
+            style={S.btnProCta}
+            onPress={goToCheckout}
+            activeOpacity={0.9}
+          >
+            <Text style={S.btnProCtaText}>Desbloquear EL-VÍA PRO</Text>
+          </TouchableOpacity>
+        )}
 
         {/* Navegación inferior */}
         <View style={{ height: 16 }} />
@@ -144,7 +254,7 @@ export default function Manual() {
           </Pressable>
           <TouchableOpacity
             style={S.homeBtn}
-            onPress={() => router.push("/home")}
+            onPress={() => router.push("/home" as never)}
             activeOpacity={0.9}
           >
             <Text style={S.homeBtnText}>🏠 Volver al inicio</Text>
@@ -179,6 +289,33 @@ const S = StyleSheet.create({
   title: { color: ROSEN.colors.white, fontSize: 20, fontWeight: "800" },
   desc: { color: ROSEN.colors.mute, marginBottom: 12 },
 
+  badgePro: {
+    backgroundColor: "rgba(16,185,129,0.2)",
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: "rgba(16,185,129,0.6)",
+    marginBottom: 12,
+  },
+  badgeProText: {
+    color: "#6EE7B7",
+    fontWeight: "800",
+  },
+  badgeFree: {
+    backgroundColor: "rgba(234,179,8,0.12)",
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: "rgba(234,179,8,0.5)",
+    marginBottom: 12,
+  },
+  badgeFreeText: {
+    color: "#FBBF24",
+    fontWeight: "700",
+  },
+
   btnPrimary: {
     backgroundColor: ROSEN.colors.rose,
     borderRadius: 12,
@@ -207,6 +344,13 @@ const S = StyleSheet.create({
     fontWeight: "800",
   },
 
+  btnProLocked: {
+    opacity: 0.8,
+  },
+  btnProLockedText: {
+    color: "#9CA3AF",
+  },
+
   btnInfo: {
     backgroundColor: "#0a84ff",
     borderRadius: 12,
@@ -226,6 +370,20 @@ const S = StyleSheet.create({
   },
   btnInfoTextDisabled: {
     color: "#9CA3AF",
+  },
+
+  btnProCta: {
+    marginTop: 10,
+    backgroundColor: ROSEN.colors.rose,
+    borderRadius: 12,
+    paddingVertical: 14,
+    borderWidth: 1,
+    borderColor: ROSEN.colors.roseDeep,
+  },
+  btnProCtaText: {
+    color: ROSEN.colors.black,
+    textAlign: "center",
+    fontWeight: "900",
   },
 
   navRow: {
